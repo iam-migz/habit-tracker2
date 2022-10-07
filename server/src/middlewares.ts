@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-
+import jwt from 'jsonwebtoken';
 import ErrorResponse from './interfaces/ErrorResponse';
 import RequestValidators from './interfaces/RequestValidators';
+import { UserModel } from './api/users/users.model';
+import { ObjectId } from 'mongodb';
 
 export function notFound(req: Request, res: Response, next: NextFunction) {
   res.status(404);
@@ -45,6 +47,35 @@ export function validateRequest(validators: RequestValidators) {
         res.status(422);
       }
       next(error);
+    }
+  };
+}
+
+export function requireAuth() {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const authorization = req.headers.authorization;
+
+    if (!authorization) {
+      res.status(401);
+      next(new Error('Authorization token required'));
+    }
+    const token = authorization?.split(' ')[1];
+
+    try {
+      const payload: any = jwt.verify(token!, process.env.JWT_SECRET!);
+      const temp = await UserModel.findOne<{ _id: number }>(
+        {
+          _id: new ObjectId(payload.id),
+        },
+        {
+          projection: { _id: 1 },
+        },
+      );
+      console.log('temp', temp);
+      next();
+    } catch (error) {
+      res.status(401);
+      next(new Error('Request is not authorized!'));
     }
   };
 }
