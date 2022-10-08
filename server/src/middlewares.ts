@@ -20,6 +20,7 @@ export function errorHandler(
   next: NextFunction,
 ) {
   if (err instanceof ZodError) {
+    //
   }
   const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
   res.status(statusCode);
@@ -53,15 +54,13 @@ export function validateRequest(validators: RequestValidators) {
 
 export function requireAuth() {
   return async (req: Request, res: Response, next: NextFunction) => {
-    const authorization = req.headers.authorization;
-
-    if (!authorization) {
-      res.status(401);
-      next(new Error('Authorization token required'));
-    }
-    const token = authorization?.split(' ')[1];
-
     try {
+      const authorization = req.headers.authorization;
+
+      if (!authorization) {
+        new Error('Authorization token required');
+      }
+      const token = authorization?.split(' ')[1];
       const payload: any = jwt.verify(token!, process.env.JWT_SECRET!);
       const temp = await UserModel.findOne<{ _id: number }>(
         {
@@ -71,11 +70,15 @@ export function requireAuth() {
           projection: { _id: 1 },
         },
       );
-      console.log('temp', temp);
+      if (!temp) {
+        new Error('Incorrect token');
+      }
+      res.locals.user = temp?._id;
       next();
     } catch (error) {
+      console.log('not authenticated');
       res.status(401);
-      next(new Error('Request is not authorized!'));
+      next(error);
     }
   };
 }

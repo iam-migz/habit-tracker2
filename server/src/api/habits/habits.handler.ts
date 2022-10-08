@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
-import { Habit, HabitModel, HabitWithId } from './habits.model';
+import { Habit, HabitModel, RawHabit } from './habits.model';
 
 export async function findAll(
   req: Request,
-  res: Response<HabitWithId[]>,
+  res: Response<Habit[]>,
   next: NextFunction,
 ) {
   try {
-    const result = HabitModel.find();
-    const habits = await result.toArray();
+    const userId = res.locals.user;
+    const habits = await HabitModel.find({ userId }).toArray();
     res.json(habits);
   } catch (error) {
     next(error);
@@ -18,17 +18,33 @@ export async function findAll(
 }
 
 export async function createOne(
-  req: Request<{}, HabitWithId, Habit>,
-  res: Response<HabitWithId>,
+  req: Request<{}, {}, RawHabit>,
+  res: Response<Habit>,
   next: NextFunction,
 ) {
   try {
-    const insertResult = await HabitModel.insertOne(req.body);
+    const { name, dates } = req.body;
+    const userId = res.locals.user;
+
+    // check if habit name duplicate
+    const duplicate = await HabitModel.findOne({ name });
+    if (duplicate) {
+      res.status(400);
+      throw new Error('Habit already exists');
+    }
+
+    const insertResult = await HabitModel.insertOne({
+      name,
+      dates,
+      userId,
+    });
     if (!insertResult.acknowledged) throw new Error('Error inserting Habit');
     res.status(201);
     res.json({
       _id: insertResult.insertedId,
-      ...req.body,
+      name,
+      dates,
+      userId,
     });
   } catch (error) {
     next(error);
@@ -36,8 +52,8 @@ export async function createOne(
 }
 
 export async function findOne(
-  req: Request<ParamsWithId, HabitWithId, {}>,
-  res: Response<HabitWithId>,
+  req: Request<ParamsWithId, {}, {}>,
+  res: Response<Habit>,
   next: NextFunction,
 ) {
   try {
@@ -55,8 +71,8 @@ export async function findOne(
 }
 
 export async function updateOne(
-  req: Request<ParamsWithId, HabitWithId, Habit>,
-  res: Response<HabitWithId>,
+  req: Request<ParamsWithId, {}, RawHabit>,
+  res: Response<Habit>,
   next: NextFunction,
 ) {
   try {
@@ -82,8 +98,8 @@ export async function updateOne(
 }
 
 export async function deleteOne(
-  req: Request<ParamsWithId, 0 | 1, {}>,
-  res: Response<0 | 1>,
+  req: Request<ParamsWithId, {}, {}>,
+  res: Response,
   next: NextFunction,
 ) {
   try {
@@ -94,8 +110,7 @@ export async function deleteOne(
       res.status(404);
       throw new Error(`Habit with id "${req.params.id}" not found`);
     }
-    res.status(204).json(result.ok);
-    // res.json(result.value);
+    res.status(204).json(result.value);
   } catch (error) {
     next(error);
   }

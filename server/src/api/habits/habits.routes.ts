@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import * as HabitHandler from './habits.handler';
 import { validateRequest, requireAuth } from '../../middlewares';
-import { Habit } from './habits.model';
+import { RawHabit } from './habits.model';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
 
 const router = Router();
 
-router.get('/', requireAuth(), HabitHandler.findAll);
+router.use(requireAuth());
+router.get('/', HabitHandler.findAll);
 router.get(
   '/:id',
   validateRequest({ params: ParamsWithId }),
@@ -15,7 +16,7 @@ router.get(
 router.post(
   '/',
   validateRequest({
-    body: Habit,
+    body: RawHabit,
   }),
   HabitHandler.createOne,
 );
@@ -23,7 +24,7 @@ router.put(
   '/:id',
   validateRequest({
     params: ParamsWithId,
-    body: Habit,
+    body: RawHabit,
   }),
   HabitHandler.updateOne,
 );
