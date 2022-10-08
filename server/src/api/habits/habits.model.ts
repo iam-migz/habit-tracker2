@@ -6,18 +6,20 @@ export const Habit = z.object({
   _id: z.instanceof(ObjectId),
   userId: z.instanceof(ObjectId),
   name: z.string().min(3),
-  dates: z.string(),
+  dates: z.array(z.string()),
 });
 
-export const RawHabit = Habit.omit({ _id: true, userId: true });
-export type RawHabit = z.infer<typeof RawHabit>;
+export const HabitName = Habit.pick({ name: true });
+export type HabitName = z.infer<typeof HabitName>;
 
-// export type Habit = z.infer<typeof Habit>;
+export const UpdateDate = z.object({ date: z.string() });
+export type UpdateDate = z.infer<typeof UpdateDate>;
+
 export interface Habit {
   _id?: ObjectId;
   userId: ObjectId;
   name: string;
-  dates: string;
+  dates?: string[];
 }
 
 export const HabitModel = db.collection<Habit>('habits');

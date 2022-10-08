@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as HabitHandler from './habits.handler';
 import { validateRequest, requireAuth } from '../../middlewares';
-import { RawHabit } from './habits.model';
+import { HabitName, UpdateDate } from './habits.model';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
 
 const router = Router();
@@ -16,17 +16,9 @@ router.get(
 router.post(
   '/',
   validateRequest({
-    body: RawHabit,
+    body: HabitName,
   }),
   HabitHandler.createOne,
-);
-router.put(
-  '/:id',
-  validateRequest({
-    params: ParamsWithId,
-    body: RawHabit,
-  }),
-  HabitHandler.updateOne,
 );
 
 router.delete(
@@ -37,7 +29,31 @@ router.delete(
   HabitHandler.deleteOne,
 );
 
-// patch update one specific thing
-// put update the whole thing
+router.patch(
+  '/updateName/:id',
+  validateRequest({
+    params: ParamsWithId,
+    body: HabitName,
+  }),
+  HabitHandler.updateName,
+);
+
+router.patch(
+  '/addDate/:id',
+  validateRequest({
+    params: ParamsWithId,
+    body: UpdateDate,
+  }),
+  HabitHandler.addDate,
+);
+
+router.patch(
+  '/removeDate/:id',
+  validateRequest({
+    params: ParamsWithId,
+    body: UpdateDate,
+  }),
+  HabitHandler.removeDate,
+);
 
 export default router;

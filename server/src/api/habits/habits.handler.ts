@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { ObjectId } from 'mongodb';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
-import { Habit, HabitModel, RawHabit } from './habits.model';
+import { Habit, HabitModel, HabitName, UpdateDate } from './habits.model';
 
 export async function findAll(
   req: Request,
@@ -18,12 +18,12 @@ export async function findAll(
 }
 
 export async function createOne(
-  req: Request<{}, {}, RawHabit>,
+  req: Request<{}, {}, HabitName>,
   res: Response<Habit>,
   next: NextFunction,
 ) {
   try {
-    const { name, dates } = req.body;
+    const { name } = req.body;
     const userId = res.locals.user;
 
     // check if habit name duplicate
@@ -35,7 +35,6 @@ export async function createOne(
 
     const insertResult = await HabitModel.insertOne({
       name,
-      dates,
       userId,
     });
     if (!insertResult.acknowledged) throw new Error('Error inserting Habit');
@@ -43,7 +42,6 @@ export async function createOne(
     res.json({
       _id: insertResult.insertedId,
       name,
-      dates,
       userId,
     });
   } catch (error) {
@@ -70,33 +68,6 @@ export async function findOne(
   }
 }
 
-export async function updateOne(
-  req: Request<ParamsWithId, {}, RawHabit>,
-  res: Response<Habit>,
-  next: NextFunction,
-) {
-  try {
-    const result = await HabitModel.findOneAndUpdate(
-      {
-        _id: new ObjectId(req.params.id),
-      },
-      {
-        $set: req.body,
-      },
-      {
-        returnDocument: 'after',
-      },
-    );
-    if (!result.value) {
-      res.status(404);
-      throw new Error(`Habit with id "${req.params.id}" not found`);
-    }
-    res.json(result.value);
-  } catch (error) {
-    next(error);
-  }
-}
-
 export async function deleteOne(
   req: Request<ParamsWithId, {}, {}>,
   res: Response,
@@ -111,6 +82,82 @@ export async function deleteOne(
       throw new Error(`Habit with id "${req.params.id}" not found`);
     }
     res.status(204).json(result.value);
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function updateName(
+  req: Request<ParamsWithId, {}, HabitName>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const result = await HabitModel.updateOne(
+      {
+        _id: new ObjectId(req.params.id),
+      },
+      {
+        $set: req.body,
+      },
+    );
+    if (!result.acknowledged) {
+      res.status(404);
+      throw new Error(`could not update habit ${req.params.id}`);
+    }
+    res.status(204).json({ ok: result.acknowledged });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function addDate(
+  req: Request<ParamsWithId, {}, UpdateDate>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const result = await HabitModel.updateOne(
+      {
+        _id: new ObjectId(req.params.id),
+      },
+      {
+        $addToSet: {
+          dates: req.body.date,
+        },
+      },
+    );
+    if (!result.acknowledged) {
+      res.status(404);
+      throw new Error(`could not update habit ${req.params.id}`);
+    }
+    res.status(204).json({ ok: result.acknowledged });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function removeDate(
+  req: Request<ParamsWithId, {}, UpdateDate>,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const result = await HabitModel.updateOne(
+      {
+        _id: new ObjectId(req.params.id),
+      },
+      {
+        $pull: {
+          dates: req.body.date,
+        },
+      },
+    );
+    if (!result.acknowledged) {
+      res.status(404);
+      throw new Error(`could not update habit ${req.params.id}`);
+    }
+    res.status(204).json({ ok: result.acknowledged });
   } catch (error) {
     next(error);
   }
