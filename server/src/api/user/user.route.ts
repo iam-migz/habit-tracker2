@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import * as userHandler from './users.handler';
+import * as userHandler from './user.handler';
 import { validateRequest } from '../../middlewares';
-import { User, LoginSchema } from './users.model';
+import { RegisterSchema, LoginSchema } from './user.validation';
 
 const router = Router();
 
 router.post(
   '/register',
   validateRequest({
-    body: User,
+    body: RegisterSchema,
   }),
   userHandler.register,
 );

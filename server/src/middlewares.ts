@@ -3,8 +3,7 @@ import { ZodError } from 'zod';
 import jwt from 'jsonwebtoken';
 import ErrorResponse from './interfaces/ErrorResponse';
 import RequestValidators from './interfaces/RequestValidators';
-import { UserModel } from './api/users/users.model';
-import { ObjectId } from 'mongodb';
+import UserModel from './api/user/user.model';
 
 export function notFound(req: Request, res: Response, next: NextFunction) {
   res.status(404);
@@ -64,7 +63,7 @@ export function requireAuth() {
       const payload: any = jwt.verify(token!, process.env.JWT_SECRET!);
       const temp = await UserModel.findOne<{ _id: number }>(
         {
-          _id: new ObjectId(payload.id),
+          _id: payload.id,
         },
         {
           projection: { _id: 1 },

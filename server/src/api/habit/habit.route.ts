@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import * as HabitHandler from './habits.handler';
+import * as HabitHandler from './habit.handler';
 import { validateRequest, requireAuth } from '../../middlewares';
-import { HabitName, UpdateDate } from './habits.model';
+import { CreateHabitSchema, UpdateDateSchema } from './habit.validation';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
 
 const router = Router();
@@ -16,7 +16,7 @@ router.get(
 router.post(
   '/',
   validateRequest({
-    body: HabitName,
+    body: CreateHabitSchema,
   }),
   HabitHandler.createOne,
 );
@@ -33,7 +33,7 @@ router.patch(
   '/updateName/:id',
   validateRequest({
     params: ParamsWithId,
-    body: HabitName,
+    body: CreateHabitSchema,
   }),
   HabitHandler.updateName,
 );
@@ -42,7 +42,7 @@ router.patch(
   '/addDate/:id',
   validateRequest({
     params: ParamsWithId,
-    body: UpdateDate,
+    body: UpdateDateSchema,
   }),
   HabitHandler.addDate,
 );
@@ -51,7 +51,7 @@ router.patch(
   '/removeDate/:id',
   validateRequest({
     params: ParamsWithId,
-    body: UpdateDate,
+    body: UpdateDateSchema,
   }),
   HabitHandler.removeDate,
 );

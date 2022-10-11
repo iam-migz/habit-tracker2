@@ -1,7 +1,7 @@
 import express from 'express';
 
-import habits from './habits/habits.routes';
-import users from './users/users.routes';
+import habits from './habit/habit.route';
+import users from './user/user.route';
 
 const router = express.Router();
 
@@ -11,7 +11,7 @@ router.get<{}, {}>('/', (req, res) => {
   });
 });
 
-router.use('/habits', habits);
-router.use('/users', users);
+router.use('/habit', habits);
+router.use('/user', users);
 
 export default router;
