@@ -18,13 +18,16 @@ export function errorHandler(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: NextFunction,
 ) {
-  if (err instanceof ZodError) {
-    //
-  }
   const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
   res.status(statusCode);
+
+  // returns the first zod error
+  let zodErr = null;
+  if (err instanceof ZodError) {
+    zodErr = err.errors[0].message;
+  }
   res.json({
-    message: err.message,
+    message: zodErr !== null ? zodErr : err.message,
     stack: process.env.NODE_ENV === 'production' ? '🥞' : err.stack,
   });
 }

@@ -11,7 +11,7 @@ export async function register(
   try {
     const duplicate = await UserModel.findOne({ email: req.body.email });
     if (duplicate) {
-      res.status(400);
+      res.status(409);
       throw new Error('Email Already Exists');
     }
 
