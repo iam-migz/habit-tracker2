@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import * as userHandler from './user.handler';
-import { validateRequest } from '../../middlewares';
-import { RegisterSchema, LoginSchema } from './user.validation';
+import { requireAuth, validateRequest } from '../../middlewares';
+import { RegisterSchema, LoginSchema } from './user.schema';
 
 const router = Router();
+
+router.get('/', requireAuth(), userHandler.getUser);
 
 router.post(
   '/register',

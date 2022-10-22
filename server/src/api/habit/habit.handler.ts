@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
-import { CreateHabitInput, UpdateDateInput } from './habit.validation';
+import { CreateHabitInput, UpdateDateInput } from './habit.schema';
 import HabitModel, { HabitDoc } from './habit.model';
 
 export async function findAll(
