@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { useQuery } from 'react-query';
 import { User } from '../../types/user.types';
 import { ApiError } from '../../types/util.types';
@@ -15,7 +14,7 @@ const queryFn = async (userToken: string) => {
 
 export const useUser = () => {
   const { userToken, setUserToken } = useTokenContext();
-  return useQuery<User, AxiosError<ApiError>>(
+  return useQuery<User, ApiError>(
     ['user', userToken],
     () => queryFn(userToken),
     {

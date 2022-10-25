@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.btn {
+  @apply py-2 px-3 rounded uppercase text-xs tracking-wider cursor-pointer;
+}
+
+.error {
+  @apply text-red-600 font-mono tracking-tighter text-sm my-1;
+}

@@ -1,7 +1,7 @@
-export type ApiError = {
-  message: string;
-};
+import { AxiosError } from 'axios';
 
 export type Token = {
   token: string;
 };
+
+export type ApiError = AxiosError<{ message: string }>;
