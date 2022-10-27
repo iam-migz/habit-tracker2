@@ -1,11 +1,10 @@
 import { useQuery } from 'react-query';
+import { useUserToken } from '../../stores/userToken';
 import { User } from '../../types/user.types';
 import { ApiError } from '../../types/util.types';
 import { api, getJWTHeader } from '../../utils/api';
-import { useTokenContext } from '../../contexts/TokenContext';
-import { clearStoredToken } from '../../utils/localStorage';
 
-const queryFn = async (userToken: string) => {
+const queryFn = async (userToken: string | null) => {
   const res = await api.get('/user/', {
     headers: getJWTHeader(userToken),
   });
@@ -13,7 +12,7 @@ const queryFn = async (userToken: string) => {
 };
 
 export const useUser = () => {
-  const { userToken, setUserToken } = useTokenContext();
+  const { userToken, setUserToken } = useUserToken();
   return useQuery<User, ApiError>(
     ['user', userToken],
     () => queryFn(userToken),
@@ -21,9 +20,7 @@ export const useUser = () => {
       onSuccess: (data) => console.log(data),
       onError: (err) => {
         if (err.response?.status == 401) {
-          // invalid token
-          clearStoredToken();
-          setUserToken('');
+          setUserToken(null);
         }
       },
     },

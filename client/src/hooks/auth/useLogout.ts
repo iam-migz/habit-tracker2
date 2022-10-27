@@ -1,11 +1,9 @@
-import { useTokenContext } from '../../contexts/TokenContext';
-import { clearStoredToken } from '../../utils/localStorage';
+import { useUserToken } from '../../stores/userToken';
 
 export const useLogout = () => {
-  const { setUserToken } = useTokenContext();
+  const setUserToken = useUserToken((state) => state.setUserToken);
   const logout = () => {
-    clearStoredToken();
-    setUserToken('');
+    setUserToken(null);
   };
   return { logout };
 };
