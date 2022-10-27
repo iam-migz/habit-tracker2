@@ -1,8 +1,7 @@
 import { api } from '../../utils/api';
 import { useMutation } from 'react-query';
 import { Token, ApiError } from '../../types/util.types';
-import { useTokenContext } from '../../contexts/TokenContext';
-import { setStoredToken } from '../../utils/localStorage';
+import { useUserToken } from '../../stores/userToken';
 
 type LoginParams = {
   email: string;
@@ -18,11 +17,10 @@ const mutationFn = async (user: LoginParams) => {
 };
 
 export const useLogin = () => {
-  const { setUserToken } = useTokenContext();
+  const setUserToken = useUserToken((state) => state.setUserToken);
   return useMutation<Token, ApiError, LoginParams>((user) => mutationFn(user), {
     onSuccess: (data) => {
       setUserToken(data.token);
-      setStoredToken(data.token);
     },
   });
 };

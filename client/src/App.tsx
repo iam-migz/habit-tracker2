@@ -4,18 +4,17 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 import ProtectedPage from './pages/ProtectedPage';
-import { useTokenContext } from './contexts/TokenContext';
+import { useUserToken } from './stores/userToken';
 
 function App() {
-  const { userToken } = useTokenContext();
-
+  const userToken = useUserToken((state) => state.userToken);
   return (
     <BrowserRouter>
       <Routes>
         <Route
           path="/"
           element={
-            <ProtectedPage isLoggedIn={userToken !== ''}>
+            <ProtectedPage isLoggedIn={userToken != null}>
               <Home />
             </ProtectedPage>
           }
