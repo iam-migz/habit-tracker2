@@ -30,12 +30,12 @@ router.delete(
 );
 
 router.patch(
-  '/updateName/:id',
+  '/:id',
   validateRequest({
     params: ParamsWithId,
     body: CreateHabitSchema,
   }),
-  HabitHandler.updateName,
+  HabitHandler.updateInfo,
 );
 
 router.patch(

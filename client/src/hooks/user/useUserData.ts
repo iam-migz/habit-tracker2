@@ -11,13 +11,12 @@ const queryFn = async (userToken: string | null) => {
   return res.data;
 };
 
-export const useUser = () => {
+export const useUserData = () => {
   const { userToken, setUserToken } = useUserToken();
   return useQuery<User, ApiError>(
     ['user', userToken],
     () => queryFn(userToken),
     {
-      onSuccess: (data) => console.log(data),
       onError: (err) => {
         if (err.response?.status == 401) {
           setUserToken(null);

@@ -3,6 +3,7 @@ import { Document, Schema, model } from 'mongoose';
 export interface HabitDoc extends Document {
   userId: Schema.Types.ObjectId;
   name: string;
+  description: string;
   dates: [Date];
   createdAt: Date;
   updatedAt: Date;
@@ -18,6 +19,10 @@ const HabitSchema = new Schema(
     name: {
       type: String,
       unique: true,
+      required: true,
+    },
+    description: {
+      type: String,
       required: true,
     },
     dates: {

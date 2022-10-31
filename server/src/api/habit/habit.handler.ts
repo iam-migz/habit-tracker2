@@ -23,7 +23,7 @@ export async function createOne(
   next: NextFunction,
 ) {
   try {
-    const { name } = req.body;
+    const { name, description } = req.body;
     const userId = res.locals.user;
 
     const duplicate = await HabitModel.findOne({ name });
@@ -35,6 +35,7 @@ export async function createOne(
     const habit = await HabitModel.create({
       name,
       userId,
+      description,
     });
 
     res.status(201).json(habit);
@@ -81,8 +82,8 @@ export async function deleteOne(
   }
 }
 
-export async function updateName(
-  req: Request<ParamsWithId, {}, UpdateDateInput>,
+export async function updateInfo(
+  req: Request<ParamsWithId, {}, CreateHabitInput>,
   res: Response,
   next: NextFunction,
 ) {
