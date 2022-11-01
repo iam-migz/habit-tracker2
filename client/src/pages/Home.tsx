@@ -1,22 +1,13 @@
-import Navbar from '../components/layout/Navbar';
-import { useEffect, useState } from 'react';
-import { getDatesInMonth } from '../utils/dateHelper';
+import { useState } from 'react';
 import { PlusIcon } from '@heroicons/react/24/solid';
+import { useHabits } from '../hooks/habit/useHabits';
+import Navbar from '../components/layout/Navbar';
 import AddHabitModal from '../components/home/AddHabitModal';
-import { useHabitData } from '../hooks/habit/useHabitData';
 import HabitItem from '../components/home/HabitItem';
 
 function Home() {
-  const [dates, setDates] = useState<Date[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const { data: habits } = useHabitData();
-
-  useEffect(() => {
-    const today = new Date();
-    setDates(
-      getDatesInMonth(today.getMonth(), today.getFullYear(), today.getDate()),
-    );
-  }, []);
+  const { data: habits } = useHabits();
 
   return (
     <div>

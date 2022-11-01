@@ -1,5 +1,5 @@
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDeleteHabit } from '../../hooks/habit/useDeleteHabit';
 import Modal from '../shared/Modal';
 
@@ -12,6 +12,12 @@ interface DeleteHabitModalProp {
 function DeleteHabitModal({ isOpen, setIsOpen, _id }: DeleteHabitModalProp) {
   const { mutate, isLoading } = useDeleteHabit();
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setErrorMsg('');
+    }
+  }, [isOpen]);
 
   const deleteHandler = () => {
     mutate(

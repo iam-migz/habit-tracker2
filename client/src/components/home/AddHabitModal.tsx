@@ -1,5 +1,5 @@
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAddHabit } from '../../hooks/habit/useAddHabit';
 import Modal from '../shared/Modal';
 
@@ -13,6 +13,12 @@ function AddHabitModal({ isOpen, setIsOpen }: AddHabitModalProp) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setErrorMsg('');
+    }
+  }, [isOpen]);
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

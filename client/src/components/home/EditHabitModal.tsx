@@ -17,9 +17,13 @@ function EditHabitModal({ isOpen, setIsOpen, habit }: EditHabitModalProp) {
   const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
-    setName(habit.name);
-    setDescription(habit.description);
-  }, []);
+    if (isOpen) {
+      setErrorMsg('');
+      setName(habit.name);
+      setDescription(habit.description);
+    }
+  }, [isOpen]);
+
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     mutate(

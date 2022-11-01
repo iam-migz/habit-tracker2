@@ -11,7 +11,7 @@ const queryFn = async (userToken: string | null) => {
   return res.data;
 };
 
-export const useHabitData = () => {
+export const useHabits = () => {
   const { userToken } = useUserToken();
   return useQuery<Habit[], ApiError>(['habits', userToken], () =>
     queryFn(userToken),

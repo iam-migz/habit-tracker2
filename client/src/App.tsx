@@ -5,9 +5,11 @@ import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 import ProtectedPage from './pages/ProtectedPage';
 import { useUserToken } from './stores/userToken';
+import Habit from './pages/Habit';
 
 function App() {
   const userToken = useUserToken((state) => state.userToken);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -16,6 +18,15 @@ function App() {
           element={
             <ProtectedPage isLoggedIn={userToken != null}>
               <Home />
+            </ProtectedPage>
+          }
+        />
+        {/* TODO not found habit page */}
+        <Route
+          path="/habit/:id"
+          element={
+            <ProtectedPage isLoggedIn={userToken != null}>
+              <Habit />
             </ProtectedPage>
           }
         />
