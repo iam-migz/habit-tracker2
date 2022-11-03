@@ -29,7 +29,7 @@ function Dropdown({ button, content }: DropdownProp) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items className="absolute right-0 top-8 bg-gray-50 rounded-lg border border-gray-100 shadow-lg z-50">
+        <Menu.Items className="absolute right-0 top-8 bg-slate-50 rounded-lg border border-gray-100 shadow-xl z-50">
           <div className="flex flex-col p-4 space-y-2 ">
             {content &&
               content.map((item, index) => (

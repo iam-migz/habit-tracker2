@@ -1,5 +1,5 @@
 import { motion, useAnimationControls } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSliderStore } from '../../stores/sliderStore';
 import {
   getDatesInMonth,
@@ -17,6 +17,19 @@ function DateSlider() {
   const slider = useRef<HTMLDivElement>(null);
   const sliderContainer = useRef<HTMLDivElement>(null);
   const sliderXPos = useRef(0);
+
+  // edgecase on a new month, only few dates shown
+  useEffect(() => {
+    if (dates.length < 7) {
+      const prev = getLastDayInPreviousMonth(dates);
+      const newDates = getDatesInMonth(
+        prev.getMonth(),
+        prev.getFullYear(),
+        prev.getDate(),
+      );
+      setDates(newDates);
+    }
+  }, [dates]);
 
   // handles the changing of month & year label
   function mouseDownHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -65,12 +78,12 @@ function DateSlider() {
 
       <div className="min-w-[80px] text-center p-2 bg-sky-200 rounded tracking-wide text-sm">
         {monthLabel == '' && dates.length !== 0
-          ? getMonthName(dates[dates.length - 1])
+          ? getMonthName(dates[0])
           : monthLabel}
       </div>
       <span className="text-xs absolute right-0 bottom-11">
         {yearLabel == 0 && dates.length !== 0
-          ? new Date(dates[dates.length - 1]).getFullYear()
+          ? new Date(dates[0]).getFullYear()
           : yearLabel}
       </span>
 

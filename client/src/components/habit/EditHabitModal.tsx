@@ -1,17 +1,19 @@
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
 import { useEditHabit } from '../../hooks/habit/useEditHabit';
-import { Habit } from '../../types/habit.types';
 import Modal from '../shared/Modal';
+import { useHabit } from '../../hooks/habit/useHabit';
 
 interface EditHabitModalProp {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  habit: Habit;
+  id: string;
 }
 
-function EditHabitModal({ isOpen, setIsOpen, habit }: EditHabitModalProp) {
-  const { mutate, isLoading } = useEditHabit();
+function EditHabitModal({ isOpen, setIsOpen, id }: EditHabitModalProp) {
+  const { mutate, isLoading } = useEditHabit(id);
+  const { data: habit } = useHabit(id);
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -27,7 +29,7 @@ function EditHabitModal({ isOpen, setIsOpen, habit }: EditHabitModalProp) {
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     mutate(
-      { _id: habit._id, name, description },
+      { name, description },
       {
         onSuccess: () => {
           setIsOpen(false);

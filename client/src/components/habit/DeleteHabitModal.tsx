@@ -1,17 +1,19 @@
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDeleteHabit } from '../../hooks/habit/useDeleteHabit';
 import Modal from '../shared/Modal';
 
 interface DeleteHabitModalProp {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  _id: string;
+  id: string;
 }
 
-function DeleteHabitModal({ isOpen, setIsOpen, _id }: DeleteHabitModalProp) {
+function DeleteHabitModal({ isOpen, setIsOpen, id }: DeleteHabitModalProp) {
   const { mutate, isLoading } = useDeleteHabit();
   const [errorMsg, setErrorMsg] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen) {
@@ -21,10 +23,11 @@ function DeleteHabitModal({ isOpen, setIsOpen, _id }: DeleteHabitModalProp) {
 
   const deleteHandler = () => {
     mutate(
-      { _id },
+      { id },
       {
         onSuccess: () => {
           setIsOpen(false);
+          navigate('/');
         },
         onError: (err) => {
           if (err.response) {

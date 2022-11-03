@@ -7,7 +7,7 @@ type SliderStore = {
   setDates: (dates: Date[]) => void;
 };
 
-const today = new Date('2022-06-22');
+const today = new Date();
 export const useSliderStore = create(
   devtools<SliderStore>((set) => ({
     dates: getDatesInMonth(

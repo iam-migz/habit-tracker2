@@ -5,14 +5,14 @@ import { ApiError } from '../../types/util.types';
 import { api, getJWTHeader } from '../../utils/api';
 
 type DeleteHabitParams = {
-  _id: string;
+  id: string;
 };
 
 const mutationFn = async (
   userToken: string | null,
   params: DeleteHabitParams,
 ) => {
-  const res = await api.delete(`/habit/${params._id}`, {
+  const res = await api.delete(`/habit/${params.id}`, {
     headers: getJWTHeader(userToken),
   });
   return res.data;
