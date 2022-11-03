@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Bars3Icon } from '@heroicons/react/24/solid';
 import { useHabits } from '../hooks/habit/useHabits';
 import Navbar from '../components/layout/Navbar';
-import AddHabitModal from '../components/home/AddHabitModal';
+import AddHabitModal from '../components/habit/AddHabitModal';
 import HabitItem from '../components/home/HabitItem';
-import DateSlider from '../components/habit/DateSlider';
+import DateSlider from '../components/home/DateSlider';
 
 function Home() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);

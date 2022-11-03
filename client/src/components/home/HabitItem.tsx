@@ -3,6 +3,7 @@ import { motion, useAnimationControls } from 'framer-motion';
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAddDate } from '../../hooks/habit/useAddDate';
+import { useDeleteDate } from '../../hooks/habit/useDeleteDate';
 import { useHabit } from '../../hooks/habit/useHabit';
 import { useSliderStore } from '../../stores/sliderStore';
 
@@ -15,25 +16,23 @@ function HabitItem({ id }: HabitItemProps) {
 
   const { dates } = useSliderStore();
   const animationController = useAnimationControls();
-  const { mutate } = useAddDate(id);
+  const { mutate: addDate } = useAddDate(id);
+  const { mutate: deleteDate } = useDeleteDate(id);
 
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.preventDefault();
-    if (
-      e.target instanceof HTMLElement &&
-      e.target.hasAttribute('data-index')
-    ) {
-      const index = Number(e.target.dataset.index);
+    const box = e.currentTarget;
+    if (box instanceof HTMLElement && box.hasAttribute('data-index')) {
+      const index = Number(box.dataset.index);
       const date = new Date(dates[index]);
-      mutate(
-        { date },
-        {
-          onSuccess: () => console.log('ok'),
-          onError: (err) => console.log(err),
-        },
-      );
+      if (box.firstChild) {
+        deleteDate({ date });
+      } else {
+        addDate({ date });
+      }
     }
   }
+
   useEffect(() => {
     function isCustomEvent(event: Event): event is CustomEvent<number> {
       return 'detail' in event;
@@ -65,7 +64,7 @@ function HabitItem({ id }: HabitItemProps) {
               dragListener={false}
               dragMomentum={false}
               dragElastic={0}
-              className="flex text-center cursor-grab space-x-2 p-1"
+              className="flex text-center cursor-crosshair space-x-2 p-1"
               animate={animationController}
             >
               {dates.map((date, index) => (

@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from 'react-query';
 import { useUserToken } from '../../stores/userToken';
 import { ApiError } from '../../types/util.types';
 import { api, getJWTHeader } from '../../utils/api';
-import { Habit } from '../../types/habit.types';
 
 type AddDateParams = {
   date: Date;
@@ -14,7 +13,7 @@ const mutationFn = async (
   params: AddDateParams,
 ) => {
   const res = await api.patch(
-    `/habit/addDate/${id}`,
+    `/habit/removeDate/${id}`,
     { date: params.date },
     {
       headers: getJWTHeader(userToken),
@@ -23,7 +22,7 @@ const mutationFn = async (
   return res.data;
 };
 
-export const useAddDate = (id: string) => {
+export const useDeleteDate = (id: string) => {
   const { userToken } = useUserToken();
   const queryClient = useQueryClient();
 
@@ -45,7 +44,10 @@ export const useAddDate = (id: string) => {
         queryClient.setQueryData(['habit', id, userToken], (oldData: any) => {
           return {
             ...oldData,
-            dates: [...oldData.dates, newDate.date],
+            dates: oldData.dates.filter(
+              (d: any) =>
+                new Date(d).getTime() !== new Date(newDate.date).getTime(),
+            ),
           };
         });
 
