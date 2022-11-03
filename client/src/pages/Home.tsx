@@ -14,7 +14,7 @@ function Home() {
     <div>
       <Navbar />
 
-      <div className="border-2 bg-slate-50 mt-12 p-3 mx-auto md:rounded">
+      <div className="md:rounded min-w-[320px] max-w-[570px] border-2 bg-slate-50 mt-12 p-3 mx-auto">
         <div className="flex justify-between items-center">
           <h1>Your Habits</h1>
           <Bars3Icon className="h-6 w-6 cursor-pointer" />

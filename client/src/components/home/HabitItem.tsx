@@ -49,15 +49,15 @@ function HabitItem({ id }: HabitItemProps) {
   }, []);
 
   return (
-    <Link to={`/habit/${habit?._id}`} className="block w-[320px] mx-auto">
+    <Link to={`/habit/${habit?._id}`} className="block min-w-[320px] mx-auto">
       <div className="flex justify-between items-center mt-2 rounded relative">
         {/* name */}
-        <div className="w-[82px] shrink-0">
+        <div className="min-w-[80px] text-center font-light">
           <h1 className="capitalize">{habit?.name}</h1>
         </div>
 
         {/* check slider */}
-        <div className="flex w-[238px] space-x-1 justify-between items-center rounded">
+        <div className="min-w-[240px] space-x-1 justify-between items-center rounded">
           <div className="overflow-hidden  border-black border-2 rounded bg-slate-500">
             <motion.div
               drag="x"
@@ -73,7 +73,7 @@ function HabitItem({ id }: HabitItemProps) {
                   className="w-[58px] shrink-0 text-center text-xs"
                 >
                   <div
-                    className="h-8 w-8 bg-slate-600 mx-auto grid place-items-center"
+                    className="h-8 w-8 bg-slate-600 mx-auto grid place-items-center rounded"
                     onClick={clickHandler}
                     data-index={index}
                   >

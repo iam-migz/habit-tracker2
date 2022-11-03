@@ -60,22 +60,22 @@ function DateSlider() {
   }
 
   return (
-    <div className="mt-6 flex items-center w-[320px] justify-between mx-auto">
+    <div className="min-w-[320px] mt-10 flex items-center  justify-between mx-auto relative">
       {/* initial month & year */}
 
-      <div className="w-[82px] p-2">
+      <div className="min-w-[80px] text-center p-2 bg-sky-200 rounded tracking-wide text-sm">
         {monthLabel == '' && dates.length !== 0
           ? getMonthName(dates[dates.length - 1])
           : monthLabel}
       </div>
-      {/* <span className="text-xs">
-          {yearLabel == 0 && dates.length !== 0
-            ? new Date(dates[dates.length - 1]).getFullYear()
-            : yearLabel}
-        </span> */}
+      <span className="text-xs absolute right-0 bottom-11">
+        {yearLabel == 0 && dates.length !== 0
+          ? new Date(dates[dates.length - 1]).getFullYear()
+          : yearLabel}
+      </span>
 
       {/* slider */}
-      <div className="flex w-[238px] space-x-1 justify-between items-center rounded">
+      <div className="min-w-[240px] flex space-x-1 justify-between items-center">
         <div
           ref={sliderContainer}
           className="overflow-hidden  border-black border-2 rounded"

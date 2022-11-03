@@ -1,5 +1,5 @@
+import { useMutation } from '@tanstack/react-query';
 import { api } from '../../utils/api';
-import { useMutation } from 'react-query';
 import { ApiError, Token } from '../../types/util.types';
 import { useUserToken } from '../../stores/userToken';
 

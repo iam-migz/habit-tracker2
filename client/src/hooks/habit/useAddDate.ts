@@ -1,8 +1,7 @@
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserToken } from '../../stores/userToken';
 import { ApiError } from '../../types/util.types';
 import { api, getJWTHeader } from '../../utils/api';
-import { Habit } from '../../types/habit.types';
 
 type AddDateParams = {
   date: Date;

@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import { useUserToken } from '../../stores/userToken';
 import { User } from '../../types/user.types';
 import { ApiError } from '../../types/util.types';

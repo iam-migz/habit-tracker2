@@ -4,9 +4,12 @@ import Navbar from '../components/layout/Navbar';
 import { useParams } from 'react-router-dom';
 import { Tab } from '@headlessui/react';
 
+type IdParams = {
+  id: string;
+};
+
 function Habit() {
-  const { id } = useParams();
-  if (!id) return;
+  const { id } = useParams<keyof IdParams>() as IdParams;
   const { data: habit } = useHabit(id);
 
   return (

@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from 'react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useUserToken } from '../../stores/userToken';
 import { Habit } from '../../types/habit.types';
 import { ApiError } from '../../types/util.types';
@@ -18,10 +18,21 @@ export const useHabit = (_id: string) => {
     ['habit', _id, userToken],
     () => queryFn(_id, userToken),
     {
-      initialData: () =>
-        queryClient
+      initialData: () => {
+        const initial: Habit = {
+          _id: '',
+          name: '',
+          description: '',
+          dates: [],
+          userId: '',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        const res = queryClient
           .getQueryData<Habit[]>(['habits', userToken])
-          ?.find((d) => d._id == _id),
+          ?.find((d) => d._id == _id);
+        return res == undefined ? initial : res;
+      },
     },
   );
 };
