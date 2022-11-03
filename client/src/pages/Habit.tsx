@@ -3,7 +3,6 @@ import { useHabit } from '../hooks/habit/useHabit';
 import Navbar from '../components/layout/Navbar';
 import { useParams } from 'react-router-dom';
 import { Tab } from '@headlessui/react';
-import DateSlider from '../components/habit/DateSlider';
 
 function Habit() {
   const { id } = useParams();
@@ -49,9 +48,7 @@ function Habit() {
             <Tab.Panels>
               <div className="mt-4 p-4">
                 <Tab.Panel>
-                  <div>
-                    <DateSlider />
-                  </div>
+                  <div>Content 1</div>
                 </Tab.Panel>
                 <Tab.Panel>
                   <div>Content 2</div>

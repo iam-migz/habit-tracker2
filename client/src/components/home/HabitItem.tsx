@@ -1,87 +1,95 @@
+import { CheckIcon } from '@heroicons/react/24/solid';
+import { motion, useAnimationControls } from 'framer-motion';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { formatDistance } from 'date-fns';
-import { Habit } from '../../types/habit.types';
-import {
-  EllipsisVerticalIcon,
-  PencilSquareIcon,
-  TrashIcon,
-  FireIcon,
-} from '@heroicons/react/24/solid';
-import Dropdown, { DropdownItem } from '../shared/Dropdown';
-import { useState } from 'react';
-import EditHabitModal from './EditHabitModal';
-import DeleteHabitModal from './DeleteHabitModal';
+import { useAddDate } from '../../hooks/habit/useAddDate';
+import { useHabit } from '../../hooks/habit/useHabit';
+import { useSliderStore } from '../../stores/sliderStore';
 
 interface HabitItemProps {
-  habit: Habit;
+  id: string;
 }
 
-function HabitItem({ habit }: HabitItemProps) {
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const dropdownData: DropdownItem[] = [
-    {
-      name: 'Edit',
-      icon: <PencilSquareIcon className="h-5 w-5" />,
-      highLightedColor: 'bg-blue-500',
-      action: () => setIsEditModalOpen(true),
-    },
-    {
-      name: 'Delete',
-      icon: <TrashIcon className="h-5 w-5" />,
-      highLightedColor: 'bg-red-500',
-      action: () => setIsDeleteModalOpen(true),
-    },
-  ];
+function HabitItem({ id }: HabitItemProps) {
+  const { data: habit } = useHabit(id);
+
+  const { dates } = useSliderStore();
+  const animationController = useAnimationControls();
+  const { mutate } = useAddDate(id);
+
+  function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
+    e.preventDefault();
+    if (
+      e.target instanceof HTMLElement &&
+      e.target.hasAttribute('data-index')
+    ) {
+      const index = Number(e.target.dataset.index);
+      const date = new Date(dates[index]);
+      mutate(
+        { date },
+        {
+          onSuccess: () => console.log('ok'),
+          onError: (err) => console.log(err),
+        },
+      );
+    }
+  }
+  useEffect(() => {
+    function isCustomEvent(event: Event): event is CustomEvent<number> {
+      return 'detail' in event;
+    }
+    function eventHandler(e: Event) {
+      if (!isCustomEvent(e)) throw new Error('not a custom event');
+
+      animationController.start({ x: e.detail });
+    }
+    document.addEventListener('sliderX', eventHandler);
+    return () => {
+      document.removeEventListener('slideX', eventHandler);
+    };
+  }, []);
 
   return (
-    <Link to={`/habit/${habit._id}`}>
-      <div className="flex justify-between items-center bg-orange-200 mt-2 p-3 rounded relative shadow-md">
+    <Link to={`/habit/${habit?._id}`} className="block w-[320px] mx-auto">
+      <div className="flex justify-between items-center mt-2 rounded relative">
         {/* name */}
-        <div>
-          <h1 className="text-lg capitalize font-bold">{habit.name}</h1>
-          <p className="text-sm">{habit.description}</p>
+        <div className="w-[82px] shrink-0">
+          <h1 className="capitalize">{habit?.name}</h1>
         </div>
 
-        {/* streak, records */}
-        <div className="flex space-x-8 text-sm">
-          <div className="flex">
-            <span>streak: 15</span>
-            <FireIcon className="h-5 w-5 text-red-400" />
+        {/* check slider */}
+        <div className="flex w-[238px] space-x-1 justify-between items-center rounded">
+          <div className="overflow-hidden  border-black border-2 rounded bg-slate-500">
+            <motion.div
+              drag="x"
+              dragListener={false}
+              dragMomentum={false}
+              dragElastic={0}
+              className="flex text-center cursor-grab space-x-2 p-1"
+              animate={animationController}
+            >
+              {dates.map((date, index) => (
+                <div
+                  key={index}
+                  className="w-[58px] shrink-0 text-center text-xs"
+                >
+                  <div
+                    className="h-8 w-8 bg-slate-600 mx-auto grid place-items-center"
+                    onClick={clickHandler}
+                    data-index={index}
+                  >
+                    {habit?.dates.find(
+                      (d) => new Date(d).getTime() === new Date(date).getTime(),
+                    ) ? (
+                      <CheckIcon className="h-6 w-6 text-green-500" />
+                    ) : (
+                      ''
+                    )}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
           </div>
-          <div>
-            <span>all time: 30</span>
-          </div>
-        </div>
-
-        <Dropdown
-          button={<EllipsisVerticalIcon className="h-7 w-7 cursor-pointer" />}
-          content={dropdownData}
-        />
-
-        {/* edit habit modal */}
-        <EditHabitModal
-          isOpen={isEditModalOpen}
-          setIsOpen={setIsEditModalOpen}
-          habit={habit}
-        />
-
-        {/* confirm delete modal  */}
-        <DeleteHabitModal
-          isOpen={isDeleteModalOpen}
-          setIsOpen={setIsDeleteModalOpen}
-          _id={habit._id}
-        />
-
-        {/* last updated */}
-        <div className="absolute text-xs bottom-0 right-10 text-slate-600">
-          <span>
-            last updated:{' '}
-            {habit.updatedAt &&
-              formatDistance(new Date(habit.updatedAt), new Date(), {
-                addSuffix: true,
-              })}
-          </span>
         </div>
       </div>
     </Link>

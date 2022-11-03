@@ -1,12 +1,6 @@
 import { motion, useAnimationControls } from 'framer-motion';
-import {
-  ChevronLeftIcon,
-  ChevronDoubleLeftIcon,
-  ChevronRightIcon,
-  ChevronDoubleRightIcon,
-  CheckIcon,
-} from '@heroicons/react/24/solid';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import { useSliderStore } from '../../stores/sliderStore';
 import {
   getDatesInMonth,
   getDayName,
@@ -15,30 +9,14 @@ import {
 } from '../../utils/dateHelper';
 
 function DateSlider() {
-  const [dates, setDates] = useState<Date[]>([]);
+  const { dates, setDates } = useSliderStore();
   const [monthLabel, setMonthLabel] = useState('');
   const [yearLabel, setYearLabel] = useState(0);
 
-  const controls = useAnimationControls();
-  const sliderContainer = useRef<HTMLDivElement>(null);
+  const animationController = useAnimationControls();
   const slider = useRef<HTMLDivElement>(null);
+  const sliderContainer = useRef<HTMLDivElement>(null);
   const sliderXPos = useRef(0);
-
-  function moveRight() {
-    controls.start({ x: sliderXPos.current - 66 });
-  }
-  function moveBigRight() {
-    controls.start({ x: sliderXPos.current - 462 });
-  }
-
-  function moveLeft() {
-    const newPos = sliderXPos.current + 66 < 0 ? sliderXPos.current + 66 : 0;
-    controls.start({ x: newPos });
-  }
-  function moveBigLeft() {
-    const newPos = sliderXPos.current + 462 < 0 ? sliderXPos.current + 462 : 0;
-    controls.start({ x: newPos });
-  }
 
   // handles the changing of month & year label
   function mouseDownHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -54,7 +32,7 @@ function DateSlider() {
   }
 
   function onUpdate(latest: { x: number }) {
-    // update the slider x position for movement button
+    // update the slider x position for movement tracking
     sliderXPos.current = latest.x;
 
     // detects when to add new dates when it crosses the threshold
@@ -65,58 +43,50 @@ function DateSlider() {
 
     if (sliderXEnd && containerXEnd) {
       if (sliderXEnd < containerXEnd) {
-        controls.stop();
+        animationController.stop();
         const prev = getLastDayInPreviousMonth(dates);
         const newDates = getDatesInMonth(
           prev.getMonth(),
           prev.getFullYear(),
           prev.getDate(),
         );
-        setDates((oldDates) => [...oldDates, ...newDates]);
+        setDates(newDates);
       }
     }
+
+    // trigger a custom event to syncronize scroll
+    const event = new CustomEvent('sliderX', { detail: sliderXPos.current });
+    document.dispatchEvent(event);
   }
 
-  // set initial dates
-  useEffect(() => {
-    const today = new Date('2022-06-22');
-    setDates(
-      getDatesInMonth(today.getMonth(), today.getFullYear(), today.getDate()),
-    );
-  }, []);
-
   return (
-    <div>
+    <div className="mt-6 flex items-center w-[320px] justify-between mx-auto">
       {/* initial month & year */}
-      <div className="flex justify-between">
-        <span>
-          {monthLabel == '' && dates.length !== 0
-            ? getMonthName(dates[dates.length - 1])
-            : monthLabel}
-        </span>
-        <span>
+
+      <div className="w-[82px] p-2">
+        {monthLabel == '' && dates.length !== 0
+          ? getMonthName(dates[dates.length - 1])
+          : monthLabel}
+      </div>
+      {/* <span className="text-xs">
           {yearLabel == 0 && dates.length !== 0
             ? new Date(dates[dates.length - 1]).getFullYear()
             : yearLabel}
-        </span>
-      </div>
+        </span> */}
 
       {/* slider */}
-      <div className="flex w-full space-x-1 justify-between items-center rounded p-2">
-        <div className="flex cursor-pointer">
-          <ChevronDoubleLeftIcon className="w-4 h-4" onClick={moveBigLeft} />
-          <ChevronLeftIcon className="w-4 h-4" onClick={moveLeft} />
-        </div>
+      <div className="flex w-[238px] space-x-1 justify-between items-center rounded">
         <div
           ref={sliderContainer}
-          className="overflow-hidden w-[455px] border-black border-2 rounded"
+          className="overflow-hidden  border-black border-2 rounded"
         >
           <motion.div
             drag="x"
             dragConstraints={{ right: 0 }}
             onUpdate={onUpdate}
             dragMomentum={false}
-            animate={controls}
+            dragElastic={0}
+            animate={animationController}
             whileDrag={{ cursor: 'grabbing' }}
             onMouseDown={mouseDownHandler}
             ref={slider}
@@ -130,24 +100,10 @@ function DateSlider() {
               >
                 <p data-index={index}>{getDayName(date)}</p>
                 <p data-index={index}>{date.getDate()}</p>
-                {/* <CheckIcon
-                  data-index={index}
-                  className="h-6 w-6 mx-auto text-green-500"
-                /> */}
               </div>
             ))}
           </motion.div>
         </div>
-        <div className="flex cursor-pointer ">
-          <ChevronRightIcon className="w-4 h-4" onClick={moveRight} />
-          <ChevronDoubleRightIcon className="w-4 h-4" onClick={moveBigRight} />
-        </div>
-      </div>
-
-      {/* streaks */}
-      <div className="flex justify-between mt-4 text-sm">
-        <span>Current streak: 15</span>
-        <span>All time record: 15</span>
       </div>
     </div>
   );
