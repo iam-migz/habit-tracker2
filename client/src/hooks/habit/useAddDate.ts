@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUserToken } from '../../stores/userToken';
+import { Habit } from '../../types/habit.types';
 import { ApiError } from '../../types/util.types';
 import { api, getJWTHeader } from '../../utils/api';
 
@@ -12,6 +13,7 @@ const mutationFn = async (
   userToken: string | null,
   params: AddDateParams,
 ) => {
+  console.log('params.date', params.date);
   const res = await api.patch(
     `/habit/addDate/${id}`,
     { date: params.date },
@@ -30,27 +32,26 @@ export const useAddDate = (id: string) => {
     (params) => mutationFn(id, userToken, params),
     {
       onMutate: async (newDate) => {
-        // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
+        // Cancel any outgoing refetches
+        // (so they don't overwrite our optimistic update)
         await queryClient.cancelQueries({ queryKey: ['habit', id, userToken] });
 
         // Snapshot the previous value
-        const previousHabit = queryClient.getQueryData([
+        const previousHabit = queryClient.getQueryData<any>([
           'habit',
           id,
           userToken,
         ]);
+        const newHabit = {
+          ...previousHabit,
+          dates: [...previousHabit.dates, newDate.date],
+        };
 
         // Optimistically update to the new value
-        queryClient.setQueryData(['habit', id, userToken], (oldData: any) => {
-          return {
-            ...oldData,
-            dates: [...oldData.dates, newDate.date],
-          };
-        });
+        queryClient.setQueryData(['habit', id, userToken], newHabit);
 
         // Return a context with the previous and new todo
-        // fix
-        return { previousHabit };
+        return { previousHabit, newHabit };
       },
       onError: (_error, _newDate, context: any) => {
         queryClient.setQueryData(

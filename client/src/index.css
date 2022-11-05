@@ -9,3 +9,21 @@
 .error {
   @apply text-red-600 font-mono tracking-tighter text-sm my-1;
 }
+
+/* circular progress bar */
+.progress-circle {
+  @apply w-[150px] h-[150px] rounded-full relative grid place-items-center;
+}
+
+.progress-circle:before {
+  content: '';
+  position: absolute;
+  height: 84%;
+  width: 84%;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+
+.progress-value {
+  @apply relative text-xl;
+}

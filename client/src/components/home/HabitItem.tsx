@@ -1,7 +1,7 @@
-import { CheckIcon } from '@heroicons/react/24/solid';
-import { motion, useAnimationControls } from 'framer-motion';
 import { useEffect } from 'react';
+import { motion, useAnimationControls } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { CheckIcon } from '@heroicons/react/24/solid';
 import { useAddDate } from '../../hooks/habit/useAddDate';
 import { useDeleteDate } from '../../hooks/habit/useDeleteDate';
 import { useHabit } from '../../hooks/habit/useHabit';

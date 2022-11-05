@@ -1,16 +1,17 @@
 import { Fragment, useState } from 'react';
-import { useHabit } from '../hooks/habit/useHabit';
-import Navbar from '../components/layout/Navbar';
-import { useParams } from 'react-router-dom';
 import { Tab } from '@headlessui/react';
+import { useParams } from 'react-router-dom';
 import {
   EllipsisHorizontalIcon,
   PencilSquareIcon,
   TrashIcon,
 } from '@heroicons/react/24/solid';
+import { useHabit } from '../hooks/habit/useHabit';
+import Navbar from '../components/layout/Navbar';
 import Dropdown, { DropdownItem } from '../components/shared/Dropdown';
 import EditHabitModal from '../components/habit/EditHabitModal';
 import DeleteHabitModal from '../components/habit/DeleteHabitModal';
+import VisualizeTab from '../components/habit/VisualizeTab';
 
 type IdParams = {
   id: string;
@@ -32,7 +33,7 @@ function Habit() {
     {
       name: 'delete',
       icon: <TrashIcon className="h-5 w-5" />,
-      highLightedColor: 'bg-green-700',
+      highLightedColor: 'bg-red-700',
       action: () => setIsDeleteModalOpen(true),
     },
   ];
@@ -65,7 +66,7 @@ function Habit() {
                       selected ? 'bg-blue-500 text-white' : ''
                     } w-full p-2 px-8 rounded`}
                   >
-                    Tracker
+                    Visualize
                   </button>
                 )}
               </Tab>
@@ -76,7 +77,7 @@ function Habit() {
                       selected ? 'bg-blue-500 text-white' : ''
                     } w-full p-2 px-8 rounded`}
                   >
-                    Progress
+                    Image
                   </button>
                 )}
               </Tab>
@@ -84,7 +85,7 @@ function Habit() {
             <Tab.Panels>
               <div className="mt-4 p-4">
                 <Tab.Panel>
-                  <div>Content 1</div>
+                  <VisualizeTab habit={habit} />
                 </Tab.Panel>
                 <Tab.Panel>
                   <div>Content 2</div>
