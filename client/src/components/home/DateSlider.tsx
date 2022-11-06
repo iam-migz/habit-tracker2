@@ -107,7 +107,7 @@ function DateSlider() {
           >
             {dates.map((date, index) => (
               <div
-                key={index}
+                key={date.toString()}
                 className="w-[58px] shrink-0 text-center text-xs"
                 data-index={index}
               >

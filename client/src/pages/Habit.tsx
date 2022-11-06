@@ -19,9 +19,16 @@ type IdParams = {
 
 function Habit() {
   const { id } = useParams<keyof IdParams>() as IdParams;
-  const { data: habit } = useHabit(id);
+  const { data: habit, isLoading, error } = useHabit(id);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  if (isLoading) {
+    return <div>loading</div>;
+  }
+  if (error) {
+    return <div>an error has occured</div>;
+  }
 
   const dropdownData: DropdownItem[] = [
     {

@@ -12,7 +12,7 @@
 
 /* circular progress bar */
 .progress-circle {
-  @apply w-[150px] h-[150px] rounded-full relative grid place-items-center;
+  @apply w-[125px] h-[125px] rounded-full relative grid place-items-center;
 }
 
 .progress-circle:before {

@@ -13,7 +13,6 @@ const mutationFn = async (
   userToken: string | null,
   params: AddDateParams,
 ) => {
-  console.log('params.date', params.date);
   const res = await api.patch(
     `/habit/addDate/${id}`,
     { date: params.date },

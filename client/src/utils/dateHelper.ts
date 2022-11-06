@@ -33,13 +33,6 @@ export function getLastDayInPreviousMonth(dates: Date[]): Date {
   return previousMonth;
 }
 
-export function areDatesConsecutive(a: Date, b: Date): boolean {
-  return (
-    Date.parse(new Date(b).toString()) - Date.parse(new Date(a).toString()) ===
-    86400000
-  );
-}
-
 // not including time in comparing dates
 export function areDatesEqual(a: Date, b: Date): boolean {
   const ADate = new Date(a);

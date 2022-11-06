@@ -18,21 +18,10 @@ export const useHabit = (_id: string) => {
     ['habit', _id, userToken],
     () => queryFn(_id, userToken),
     {
-      initialData: () => {
-        const initial: Habit = {
-          _id: '',
-          name: '',
-          description: '',
-          dates: [],
-          userId: '',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        const res = queryClient
+      initialData: () =>
+        queryClient
           .getQueryData<Habit[]>(['habits', userToken])
-          ?.find((d) => d._id == _id);
-        return res == undefined ? initial : res;
-      },
+          ?.find((d) => d._id == _id),
     },
   );
 };
