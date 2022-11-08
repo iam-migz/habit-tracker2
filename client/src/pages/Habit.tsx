@@ -23,7 +23,6 @@ function Habit() {
   const { data: habit, isLoading, error } = useHabit(id);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
   if (isLoading) {
     return <div>loading</div>;
   }
@@ -78,17 +77,19 @@ function Habit() {
                   </button>
                 )}
               </Tab>
-              <Tab as={Fragment}>
-                {({ selected }) => (
-                  <button
-                    className={`${
-                      selected ? 'bg-blue-500 text-white' : ''
-                    } w-full p-2 px-8 rounded`}
-                  >
-                    Image
-                  </button>
-                )}
-              </Tab>
+              {habit.includeImages && habit.dates.length != 0 && (
+                <Tab as={Fragment}>
+                  {({ selected }) => (
+                    <button
+                      className={`${
+                        selected ? 'bg-blue-500 text-white' : ''
+                      } w-full p-2 px-8 rounded`}
+                    >
+                      Image
+                    </button>
+                  )}
+                </Tab>
+              )}
             </Tab.List>
             <Tab.Panels>
               <div className="mt-4 p-4">

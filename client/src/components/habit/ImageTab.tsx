@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Habit } from '../../types/habit.types';
 import { getDayName, getMonthName } from '../../utils/dateHelper';
 import { PhotoIcon } from '@heroicons/react/24/solid';
+import AddImageModal from './AddImageModal';
 
 interface ImageTabProp {
   habit: Habit;
@@ -14,6 +15,8 @@ function ImageTab({ habit }: ImageTabProp) {
 
   const [width, setWidth] = useState(0);
   const slider = useRef<HTMLDivElement>(null);
+
+  const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false);
 
   const dates = habit.dates
     .map((d) => new Date(d))
@@ -74,6 +77,10 @@ function ImageTab({ habit }: ImageTabProp) {
                 key={date.toString()}
                 className="w-[58px] shrink-0 text-center text-xs"
                 data-index={index}
+                onClick={() => {
+                  // set store data, to this current date and index
+                  setIsAddImageModalOpen(true);
+                }}
               >
                 <p data-index={index}>{getDayName(date)}</p>
                 <p data-index={index}>{date.getDate()}</p>
@@ -88,6 +95,11 @@ function ImageTab({ habit }: ImageTabProp) {
       <div className="btn bg-orange-300 text-center  mt-8 inline-block">
         Image Viewer
       </div>
+
+      <AddImageModal
+        isOpen={isAddImageModalOpen}
+        setIsOpen={setIsAddImageModalOpen}
+      />
     </div>
   );
 }

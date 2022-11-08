@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as userHandler from './user.handler';
 import { requireAuth, validateRequest } from '../../middlewares';
-import { RegisterSchema, LoginSchema } from './user.schema';
+import { RegisterSchema, LoginSchema } from './user.validation';
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { createToken } from '../../utils/token';
-import { RegisterInput, LoginInput } from './user.schema';
+import { RegisterInput, LoginInput } from './user.validation';
 import UserModel from './user.model';
 
 export async function getUser(req: Request, res: Response, next: NextFunction) {

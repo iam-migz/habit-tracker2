@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
-import { CreateHabitInput, UpdateDateInput } from './habit.schema';
+import { CreateHabitInput, UpdateDateInput } from './habit.validation';
 import HabitModel, { HabitDoc } from './habit.model';
 
 export async function findAll(
@@ -23,7 +23,7 @@ export async function createOne(
   next: NextFunction,
 ) {
   try {
-    const { name, description } = req.body;
+    const { name, description, includeImages } = req.body;
     const userId = res.locals.user;
 
     const duplicate = await HabitModel.findOne({ name });
@@ -36,6 +36,7 @@ export async function createOne(
       name,
       userId,
       description,
+      includeImages,
     });
 
     res.status(201).json(habit);

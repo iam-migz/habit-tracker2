@@ -5,6 +5,7 @@ export interface HabitDoc extends Document {
   name: string;
   description: string;
   dates: [Date];
+  includeImages: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -27,6 +28,10 @@ const HabitSchema = new Schema(
     },
     dates: {
       type: [Date],
+    },
+    includeImages: {
+      type: Boolean,
+      required: true,
     },
   },
   { timestamps: true },

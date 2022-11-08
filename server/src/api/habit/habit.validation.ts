@@ -1,4 +1,4 @@
-import { string, object, TypeOf } from 'zod';
+import { string, object, boolean, TypeOf } from 'zod';
 
 export const CreateHabitSchema = object({
   name: string({
@@ -7,6 +7,10 @@ export const CreateHabitSchema = object({
   description: string({
     required_error: 'Description is required',
   }).min(3, 'Description too short, should be 3 chars minimum'),
+  includeImages: boolean({
+    required_error: 'includeImages is required',
+    invalid_type_error: 'includeImages must be a boolean',
+  }),
 });
 
 export const UpdateDateSchema = object({

@@ -2,14 +2,14 @@ import create from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { getDatesInMonth } from '../utils/dateHelper';
 
-type SliderStore = {
+type HabitStore = {
   dates: Date[];
   setDates: (dates: Date[]) => void;
 };
 
 const today = new Date();
-export const useSliderStore = create(
-  devtools<SliderStore>((set) => ({
+export const useHabitStore = create(
+  devtools<HabitStore>((set) => ({
     dates: getDatesInMonth(
       today.getMonth(),
       today.getFullYear(),

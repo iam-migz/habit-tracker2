@@ -13,17 +13,19 @@ function AddHabitModal({ isOpen, setIsOpen }: AddHabitModalProp) {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [includeImages, setIncludeImages] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setErrorMsg('');
+      setIncludeImages(false);
     }
   }, [isOpen]);
 
   const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     mutate(
-      { name, description },
+      { name, description, includeImages },
       {
         onSuccess: () => {
           setIsOpen(false);
@@ -66,6 +68,18 @@ function AddHabitModal({ isOpen, setIsOpen }: AddHabitModalProp) {
           />
         </div>
         <div className="error">{errorMsg}</div>
+
+        <div className="mb-4">
+          <label className="block" htmlFor="flexCheckDefault">
+            Include Images
+          </label>
+          <input
+            className="block w-4 h-4 cursor-pointer"
+            type="checkbox"
+            id="flexCheckDefault"
+            onChange={() => setIncludeImages(!includeImages)}
+          />
+        </div>
 
         <div className="flex justify-between">
           <div>

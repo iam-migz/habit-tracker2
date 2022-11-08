@@ -4,6 +4,7 @@ export type Habit = {
   description: string;
   dates: Date[];
   userId: string;
+  includeImages: boolean;
   createdAt: Date;
   updatedAt: Date;
 };

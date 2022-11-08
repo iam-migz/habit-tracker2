@@ -7,6 +7,7 @@ import { api, getJWTHeader } from '../../utils/api';
 type AddHabitParams = {
   name: string;
   description: string;
+  includeImages: boolean;
 };
 
 const mutationFn = async (userToken: string | null, habit: AddHabitParams) => {

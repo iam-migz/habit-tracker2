@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as HabitHandler from './habit.handler';
 import { validateRequest, requireAuth } from '../../middlewares';
-import { CreateHabitSchema, UpdateDateSchema } from './habit.schema';
+import { CreateHabitSchema, UpdateDateSchema } from './habit.validation';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
 
 const router = Router();

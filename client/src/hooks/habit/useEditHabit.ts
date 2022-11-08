@@ -7,6 +7,7 @@ import { api, getJWTHeader } from '../../utils/api';
 type EditHabitParams = {
   name: string;
   description: string;
+  includeImages: boolean;
 };
 
 const mutationFn = async (
@@ -14,7 +15,6 @@ const mutationFn = async (
   userToken: string | null,
   habit: EditHabitParams,
 ) => {
-  console.log('habit', habit);
   const res = await api.patch(`/habit/${id}`, habit, {
     headers: getJWTHeader(userToken),
   });

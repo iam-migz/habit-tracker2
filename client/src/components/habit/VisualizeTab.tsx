@@ -61,8 +61,8 @@ function VisualizeTab({ habit }: VisualizeTabProp) {
           <span>{dates.length} total</span>
         </div>
         <CalendarHeatmap
-          startDate={new Date(`${dates[0].getFullYear()}`)}
-          endDate={new Date(`${dates[0].getFullYear()}-12-31`)}
+          startDate={new Date(`${new Date().getFullYear()}`)}
+          endDate={new Date(`${new Date().getFullYear()}-12-31`)}
           values={dates.map((d) => {
             return {
               date: d,

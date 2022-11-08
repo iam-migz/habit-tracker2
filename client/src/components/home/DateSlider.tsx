@@ -1,6 +1,6 @@
 import { motion, useAnimationControls } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import { useSliderStore } from '../../stores/sliderStore';
+import { useHabitStore } from '../../stores/habitStore';
 import {
   getDatesInMonth,
   getDayName,
@@ -9,7 +9,7 @@ import {
 } from '../../utils/dateHelper';
 
 function DateSlider() {
-  const { dates, setDates } = useSliderStore();
+  const { dates, setDates } = useHabitStore();
   const [monthLabel, setMonthLabel] = useState('');
   const [yearLabel, setYearLabel] = useState(0);
 

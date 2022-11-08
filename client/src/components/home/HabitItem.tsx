@@ -5,7 +5,7 @@ import { CheckIcon } from '@heroicons/react/24/solid';
 import { useAddDate } from '../../hooks/habit/useAddDate';
 import { useDeleteDate } from '../../hooks/habit/useDeleteDate';
 import { useHabit } from '../../hooks/habit/useHabit';
-import { useSliderStore } from '../../stores/sliderStore';
+import { useHabitStore } from '../../stores/habitStore';
 
 interface HabitItemProps {
   id: string;
@@ -14,7 +14,7 @@ interface HabitItemProps {
 function HabitItem({ id }: HabitItemProps) {
   const { data: habit } = useHabit(id);
 
-  const { dates } = useSliderStore();
+  const dates = useHabitStore((state) => state.dates);
   const animationController = useAnimationControls();
   const { mutate: addDate } = useAddDate(id);
   const { mutate: deleteDate } = useDeleteDate(id);
