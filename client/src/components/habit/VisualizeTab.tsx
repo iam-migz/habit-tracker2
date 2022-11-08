@@ -1,8 +1,8 @@
-import { areDatesEqual } from '../../utils/dateHelper';
-import ProgressBar from './ProgressBar';
+import { useEffect, useState } from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
-import { useEffect, useState } from 'react';
+import ProgressBar from './ProgressBar';
+import { areDatesEqual } from '../../utils/dateHelper';
 import { Habit } from '../../types/habit.types';
 
 interface VisualizeTabProp {

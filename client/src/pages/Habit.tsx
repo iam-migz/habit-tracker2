@@ -12,6 +12,7 @@ import Dropdown, { DropdownItem } from '../components/shared/Dropdown';
 import EditHabitModal from '../components/habit/EditHabitModal';
 import DeleteHabitModal from '../components/habit/DeleteHabitModal';
 import VisualizeTab from '../components/habit/VisualizeTab';
+import ImageTab from '../components/habit/ImageTab';
 
 type IdParams = {
   id: string;
@@ -95,7 +96,7 @@ function Habit() {
                   <VisualizeTab habit={habit} />
                 </Tab.Panel>
                 <Tab.Panel>
-                  <div>Content 2</div>
+                  <ImageTab habit={habit} />
                 </Tab.Panel>
               </div>
             </Tab.Panels>
