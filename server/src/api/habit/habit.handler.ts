@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { ParamsWithId } from '../../interfaces/ParamsWithId';
-import { CreateHabitInput, UpdateDateInput } from './habit.validation';
+import { HabitInput } from './habit.validation';
 import HabitModel, { HabitDoc } from './habit.model';
 
 export async function findAll(
@@ -18,7 +18,7 @@ export async function findAll(
 }
 
 export async function createOne(
-  req: Request<{}, {}, CreateHabitInput>,
+  req: Request<{}, {}, HabitInput>,
   res: Response<HabitDoc>,
   next: NextFunction,
 ) {
@@ -83,8 +83,8 @@ export async function deleteOne(
   }
 }
 
-export async function updateInfo(
-  req: Request<ParamsWithId, {}, CreateHabitInput>,
+export async function updateOne(
+  req: Request<ParamsWithId, {}, HabitInput>,
   res: Response,
   next: NextFunction,
 ) {
@@ -95,58 +95,6 @@ export async function updateInfo(
       },
       {
         $set: req.body,
-      },
-    );
-    if (!result.acknowledged) {
-      res.status(404);
-      throw new Error(`could not update habit ${req.params.id}`);
-    }
-    res.status(204).json({ ok: result.acknowledged });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function addDate(
-  req: Request<ParamsWithId, {}, UpdateDateInput>,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const result = await HabitModel.updateOne(
-      {
-        _id: req.params.id,
-      },
-      {
-        $addToSet: {
-          dates: req.body.date,
-        },
-      },
-    );
-    if (!result.acknowledged) {
-      res.status(404);
-      throw new Error(`could not update habit ${req.params.id}`);
-    }
-    res.status(204).json({ ok: result.acknowledged });
-  } catch (error) {
-    next(error);
-  }
-}
-
-export async function removeDate(
-  req: Request<ParamsWithId, {}, UpdateDateInput>,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const result = await HabitModel.updateOne(
-      {
-        _id: req.params.id,
-      },
-      {
-        $pull: {
-          dates: req.body.date,
-        },
       },
     );
     if (!result.acknowledged) {

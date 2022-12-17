@@ -4,8 +4,6 @@ export interface HabitDoc extends Document {
   userId: Schema.Types.ObjectId;
   name: string;
   description: string;
-  dates: [Date];
-  includeImages: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,13 +22,6 @@ const HabitSchema = new Schema(
     },
     description: {
       type: String,
-      required: true,
-    },
-    dates: {
-      type: [Date],
-    },
-    includeImages: {
-      type: Boolean,
       required: true,
     },
   },

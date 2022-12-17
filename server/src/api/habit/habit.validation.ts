@@ -1,6 +1,6 @@
 import { string, object, boolean, TypeOf } from 'zod';
 
-export const CreateHabitSchema = object({
+export const HabitSchema = object({
   name: string({
     required_error: 'Name is required',
   }).min(3, 'Name too short, should be 3 chars minimum'),
@@ -13,11 +13,4 @@ export const CreateHabitSchema = object({
   }),
 });
 
-export const UpdateDateSchema = object({
-  date: string({
-    required_error: 'Date is required',
-  }),
-});
-
-export type CreateHabitInput = TypeOf<typeof CreateHabitSchema>;
-export type UpdateDateInput = TypeOf<typeof UpdateDateSchema>;
+export type HabitInput = TypeOf<typeof HabitSchema>;
