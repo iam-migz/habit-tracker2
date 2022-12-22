@@ -1,63 +1,87 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLogin } from '../hooks/auth/useLogin';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
+import { useMutation } from '@tanstack/react-query';
+import { z } from 'zod';
+import { api } from '../utils/axios';
+import { Tokens } from '../types/tokens.types';
+import { AxiosError } from 'axios';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+const LoginSchema = z.object({
+  email: z
+    .string({
+      required_error: 'Email is required',
+    })
+    .email('Not a valid email'),
+  password: z
+    .string({
+      required_error: 'Password is required',
+    })
+    .min(6, 'Password too short - 6 chars minimum'),
+});
+
+export type LoginInput = z.TypeOf<typeof LoginSchema>;
 
 function Login() {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<LoginInput>({
+    resolver: zodResolver(LoginSchema),
+  });
+
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const { mutate, isLoading } = useLogin();
+  const { mutate, isLoading } = useMutation<Tokens, AxiosError, LoginInput>(
+    async (value: LoginInput) => {
+      const res = await api.post('/sessions', value);
+      return res.data;
+    },
+  );
 
-  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate(
-      { email, password },
-      {
-        onSuccess: () => {
-          navigate('/');
-        },
-        onError: (err) => {
-          if (err.response) {
-            setErrorMsg(err.response.data.message);
-          } else {
-            setErrorMsg(err.message);
-          }
-        },
+  const onSubmit = async (values: LoginInput) => {
+    mutate(values, {
+      onSuccess: () => {
+        navigate('/');
       },
-    );
+      onError: (err) => {
+        setErrorMsg(err.response?.data as string);
+      },
+    });
   };
 
   return (
     <div className="h-screen bg-sky-200 grid place-items-center ">
       <div className="bg-white w-4/5 mx-auto p-4 mb-40 shadow-lg rounded md:w-96">
-        <form action="#" onSubmit={submitHandler}>
+        <form action="#" onSubmit={handleSubmit(onSubmit)}>
           <h1 className="text-center text-xl">Login</h1>
 
           <div className="flex flex-col mb-4">
             <label htmlFor="email">Email</label>
             <input
               className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
-              onChange={(e) => setEmail(e.target.value)}
               type="email"
-              name="email"
               id="email"
               required
+              {...register('email')}
             />
+            <p className="error">{errors.email?.message}</p>
           </div>
 
           <div className="flex flex-col mb-4">
             <label htmlFor="password">Password</label>
             <input
               className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
-              onChange={(e) => setPassword(e.target.value)}
               type="password"
-              name="password"
               id="password"
               required
+              {...register('password')}
             />
+            <p className="error">{errors.password?.message}</p>
           </div>
           <div className="error">{errorMsg}</div>
 

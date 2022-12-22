@@ -4,32 +4,29 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 import ProtectedPage from './pages/ProtectedPage';
-import { useUserToken } from './stores/userToken';
-import Habit from './pages/Habit';
+// import Habit from './pages/Habit';
 
 function App() {
-  const userToken = useUserToken((state) => state.userToken);
-
   return (
     <BrowserRouter>
       <Routes>
         <Route
           path="/"
           element={
-            <ProtectedPage isLoggedIn={userToken != null}>
+            <ProtectedPage isLoggedIn={true}>
               <Home />
             </ProtectedPage>
           }
         />
-        {/* TODO not found habit page */}
-        <Route
+
+        {/* <Route
           path="/habit/:id"
           element={
             <ProtectedPage isLoggedIn={userToken != null}>
               <Habit />
             </ProtectedPage>
           }
-        />
+        />  */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />

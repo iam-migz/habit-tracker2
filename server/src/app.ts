@@ -27,3 +27,10 @@ app.listen(port, async () => {
 	await connect();
 	routes(app);
 });
+
+/*
+	TODO
+	---
+	1. log every request made
+	2. error handler
+*/
