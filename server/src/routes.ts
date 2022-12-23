@@ -1,31 +1,34 @@
-import { Express, Request, Response } from 'express';
-import { createUserHandler, getCurrentUser } from './controllers/user.controller';
+import { Request, Response } from 'express';
+import { Router } from 'express';
+
+import * as session from './controllers/session.controller';
+import * as habit from './controllers/habit.controller';
+import * as user from './controllers/user.controller';
 import validateResource from './midllewares/validateResource';
-import { createUserSchema } from './schema/user.schema';
-import {
-	createUserSessionHandler,
-	deleteSessionHandler,
-	getUserSessionsHandler,
-} from './controllers/session.controller';
-import { createSessionSchema } from './schema/session.schema';
 import requireUser from './midllewares/requireUser';
+import { createUserSchema } from './schema/user.schema';
+import { createSessionSchema } from './schema/session.schema';
+import { createHabitSchema, destroyHabitSchema, showHabitSchema, updateHabitSchema } from './schema/habit.schema';
 
-function routes(app: Express) {
-	// healthcheck
-	app.get('/', (req: Request, res: Response) => {
-		res.sendStatus(200);
-	});
+const router = Router();
 
-	// User
-	app.post('/api/users', validateResource(createUserSchema), createUserHandler);
-	app.get('/api/me', requireUser, getCurrentUser);
+// Healthcheck
+router.get('/', (req: Request, res: Response) => res.sendStatus(200));
 
-	// Session
-	app.post('/api/sessions', validateResource(createSessionSchema), createUserSessionHandler);
+// User
+router.post('/users', validateResource(createUserSchema), user.createUserHandler);
+router.get('/me', requireUser, user.getCurrentUser);
 
-	app.get('/api/sessions', requireUser, getUserSessionsHandler);
+// Session
+router.post('/sessions', validateResource(createSessionSchema), session.createUserSessionHandler);
+router.get('/sessions', requireUser, session.getUserSessionsHandler);
+router.delete('/sessions', requireUser, session.deleteSessionHandler);
 
-	app.delete('/api/sessions', requireUser, deleteSessionHandler);
-}
+// Habit
+router.get('/habits', requireUser, habit.indexHandler);
+router.post('/habits', [requireUser, validateResource(createHabitSchema)], habit.createHandler);
+router.get('/habits/:habitId', [requireUser, validateResource(showHabitSchema)], habit.showHandler);
+router.put('/habits/:habitId', [requireUser, validateResource(updateHabitSchema)], habit.updateHandler);
+router.delete('/habits/:habitId', [requireUser, validateResource(destroyHabitSchema)], habit.destroyHandler);
 
-export default routes;
+export default router;

@@ -3,12 +3,8 @@ import UserModel, { UserDoc, UserInput } from '../models/user.model';
 import { omit } from 'lodash';
 
 export async function createUser(input: UserInput) {
-	try {
-		const user = await UserModel.create(input);
-		return omit(user.toJSON(), 'password');
-	} catch (e: any) {
-		throw new Error(e);
-	}
+	const user = await UserModel.create(input);
+	return omit(user.toJSON(), 'password');
 }
 
 export async function validatePassword({ email, password }: { email: string; password: string }) {
@@ -22,5 +18,8 @@ export async function validatePassword({ email, password }: { email: string; pas
 }
 
 export async function findUser(query: FilterQuery<UserDoc>) {
-	return UserModel.findOne(query);
+	const user = await UserModel.findOne(query);
+	if (!user) throw new Error('Could not find user');
+
+	return omit(user.toJSON(), 'password');
 }
