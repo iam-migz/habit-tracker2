@@ -5,9 +5,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '../utils/axios';
+import api from '../utils/axiosInstance';
 import { User } from '../types/user.types';
-import { AxiosError } from 'axios';
+import { ApiError } from '../types/util.types';
 
 const RegisterSchema = z.object({
   name: z
@@ -38,7 +38,7 @@ function Register() {
     resolver: zodResolver(RegisterSchema),
   });
 
-  const { mutate, isLoading } = useMutation<User, AxiosError, RegisterInput>(
+  const { mutate, isLoading } = useMutation<User, ApiError, RegisterInput>(
     async (value: RegisterInput) => {
       const res = await api.post('/users', value);
       return res.data;
@@ -53,7 +53,7 @@ function Register() {
         navigate('/login');
       },
       onError: (err) => {
-        setErrorMsg(err.message);
+        setErrorMsg(err.response?.data.message as string);
       },
     });
   };

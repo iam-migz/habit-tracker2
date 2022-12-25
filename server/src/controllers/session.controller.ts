@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import config from 'config';
 import { validatePassword } from '../service/user.service';
-import { createSession, findSessions, updateSession } from '../service/session.service';
+import * as service from '../service/session.service';
 import { signJwt } from '../utils/jwt.utils';
 
-export async function createUserSessionHandler(req: Request, res: Response, next: NextFunction) {
+export async function createHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const user = await validatePassword(req.body);
 		if (!user) {
@@ -13,7 +13,7 @@ export async function createUserSessionHandler(req: Request, res: Response, next
 		}
 
 		// create a session
-		const session = await createSession(user._id, req.get('user-agent') || '');
+		const session = await service.create(user._id, req.get('user-agent') || '');
 
 		// create access token
 		const accessToken = signJwt(
@@ -64,11 +64,11 @@ export async function createUserSessionHandler(req: Request, res: Response, next
 	}
 }
 
-export async function getUserSessionsHandler(req: Request, res: Response, next: NextFunction) {
+export async function showHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const userId = res.locals.user._id;
 
-		const sessions = await findSessions({ userId, valid: true });
+		const sessions = await service.show({ userId, valid: true });
 
 		return res.send(sessions);
 	} catch (e) {
@@ -76,11 +76,12 @@ export async function getUserSessionsHandler(req: Request, res: Response, next: 
 	}
 }
 
-export async function deleteSessionHandler(req: Request, res: Response, next: NextFunction) {
+export async function deleteHandler(req: Request, res: Response, next: NextFunction) {
 	try {
 		const sessionId = res.locals.user.sessionId;
-		await updateSession({ _id: sessionId }, { valid: false });
-
+		await service.update({ _id: sessionId }, { valid: false });
+		res.clearCookie('accessToken');
+		res.clearCookie('refreshToken');
 		return res.send({
 			accessToken: null,
 			refreshToken: null,

@@ -2,7 +2,7 @@ import { FilterQuery } from 'mongoose';
 import UserModel, { UserDoc, UserInput } from '../models/user.model';
 import { omit } from 'lodash';
 
-export async function createUser(input: UserInput) {
+export async function create(input: UserInput) {
 	const user = await UserModel.create(input);
 	return omit(user.toJSON(), 'password');
 }
@@ -17,7 +17,7 @@ export async function validatePassword({ email, password }: { email: string; pas
 	return omit(user.toJSON(), 'password');
 }
 
-export async function findUser(query: FilterQuery<UserDoc>) {
+export async function show(query: FilterQuery<UserDoc>) {
 	const user = await UserModel.findOne(query);
 	if (!user) throw new Error('Could not find user');
 

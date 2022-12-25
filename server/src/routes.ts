@@ -1,6 +1,4 @@
-import { Request, Response } from 'express';
-import { Router } from 'express';
-
+import { Request, Response, Router } from 'express';
 import * as session from './controllers/session.controller';
 import * as habit from './controllers/habit.controller';
 import * as user from './controllers/user.controller';
@@ -18,13 +16,13 @@ const router = Router();
 router.get('/', (req: Request, res: Response) => res.sendStatus(200));
 
 // Users
-router.post('/users', validateResource(createUserSchema), user.createUserHandler);
-router.get('/me', requireUser, user.getCurrentUser);
+router.post('/users', validateResource(createUserSchema), user.createHandler);
+router.get('/users', requireUser, user.showHandler);
 
-// Sessions
-router.post('/sessions', validateResource(createSessionSchema), session.createUserSessionHandler);
-router.get('/sessions', requireUser, session.getUserSessionsHandler);
-router.delete('/sessions', requireUser, session.deleteSessionHandler);
+// User Sessions
+router.post('/sessions', validateResource(createSessionSchema), session.createHandler);
+router.get('/sessions', requireUser, session.showHandler);
+router.delete('/sessions', requireUser, session.deleteHandler);
 
 // Habits
 router.post('/habits', [requireUser, validateResource(createHabitSchema)], habit.createHandler);

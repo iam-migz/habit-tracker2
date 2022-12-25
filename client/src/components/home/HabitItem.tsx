@@ -2,10 +2,11 @@ import { useEffect } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckIcon } from '@heroicons/react/24/solid';
-import { useAddDate } from '../../hooks/habit/useAddDate';
-import { useDeleteDate } from '../../hooks/habit/useDeleteDate';
 import { useHabit } from '../../hooks/habit/useHabit';
 import { useHabitStore } from '../../stores/habitStore';
+import { useRecords } from '../../hooks/record/useRecords';
+import { useAddRecord } from '../../hooks/record/useAddRecord';
+import { useDeleteRecord } from '../../hooks/record/useDeleteRecord';
 
 interface HabitItemProps {
   id: string;
@@ -13,11 +14,16 @@ interface HabitItemProps {
 
 function HabitItem({ id }: HabitItemProps) {
   const { data: habit } = useHabit(id);
+  const { data: records } = useRecords(id);
 
   const dates = useHabitStore((state) => state.dates);
   const animationController = useAnimationControls();
-  const { mutate: addDate } = useAddDate(id);
-  const { mutate: deleteDate } = useDeleteDate(id);
+
+  // const { mutate: addDate } = useAddDate(id);
+  // const { mutate: deleteDate } = useDeleteDate(id);
+
+  const { mutate: addDate } = useAddRecord();
+  const { mutate: deleteData } = useDeleteRecord();
 
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.preventDefault();
@@ -26,9 +32,11 @@ function HabitItem({ id }: HabitItemProps) {
       const index = Number(box.dataset.index);
       const date = new Date(dates[index]);
       if (box.firstChild) {
-        deleteDate({ date });
+        console.log('delete');
+        // deleteData({ date });
       } else {
-        addDate({ date });
+        console.log('add');
+        // addDate({ date });
       }
     }
   }
@@ -77,8 +85,9 @@ function HabitItem({ id }: HabitItemProps) {
                     onClick={clickHandler}
                     data-index={index}
                   >
-                    {habit?.dates.find(
-                      (d) => new Date(d).getTime() === new Date(date).getTime(),
+                    {records?.find(
+                      (r) =>
+                        new Date(r.date).getTime() === new Date(date).getTime(),
                     ) ? (
                       <CheckIcon className="h-6 w-6 text-green-500" />
                     ) : (

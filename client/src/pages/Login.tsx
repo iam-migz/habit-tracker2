@@ -3,11 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { useMutation } from '@tanstack/react-query';
 import { z } from 'zod';
-import { api } from '../utils/axios';
+import api from '../utils/axiosInstance';
 import { Tokens } from '../types/tokens.types';
-import { AxiosError } from 'axios';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ApiError } from '../types/util.types';
 
 const LoginSchema = z.object({
   email: z
@@ -36,7 +36,7 @@ function Login() {
   const navigate = useNavigate();
   const [errorMsg, setErrorMsg] = useState('');
 
-  const { mutate, isLoading } = useMutation<Tokens, AxiosError, LoginInput>(
+  const { mutate, isLoading } = useMutation<Tokens, ApiError, LoginInput>(
     async (value: LoginInput) => {
       const res = await api.post('/sessions', value);
       return res.data;
@@ -49,7 +49,7 @@ function Login() {
         navigate('/');
       },
       onError: (err) => {
-        setErrorMsg(err.response?.data as string);
+        setErrorMsg(err.response?.data.message as string);
       },
     });
   };

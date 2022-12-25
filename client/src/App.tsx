@@ -3,21 +3,16 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
-import ProtectedPage from './pages/ProtectedPage';
+import ProtectedPages from './pages/ProtectedPages';
 // import Habit from './pages/Habit';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route
-          path="/"
-          element={
-            <ProtectedPage isLoggedIn={true}>
-              <Home />
-            </ProtectedPage>
-          }
-        />
+        <Route element={<ProtectedPages />}>
+          <Route element={<Home />} path="/" />
+        </Route>
 
         {/* <Route
           path="/habit/:id"

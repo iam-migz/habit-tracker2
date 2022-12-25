@@ -2,19 +2,19 @@ import { FilterQuery, UpdateQuery } from 'mongoose';
 import SessionModel, { SessionDoc } from '../models/session.model';
 import { signJwt, verifyJwt } from '../utils/jwt.utils';
 import { get } from 'lodash';
-import { findUser } from './user.service';
+import { show as showUser } from './user.service';
 import config from 'config';
 
-export async function createSession(userId: string, userAgent: string) {
+export async function create(userId: string, userAgent: string) {
 	const session = await SessionModel.create({ userId, userAgent });
 	return session.toJSON();
 }
 
-export async function findSessions(query: FilterQuery<SessionDoc>) {
+export async function show(query: FilterQuery<SessionDoc>) {
 	return SessionModel.find(query).lean();
 }
 
-export async function updateSession(query: FilterQuery<SessionDoc>, update: UpdateQuery<SessionDoc>) {
+export async function update(query: FilterQuery<SessionDoc>, update: UpdateQuery<SessionDoc>) {
 	return SessionModel.updateOne(query, update);
 }
 
@@ -26,7 +26,7 @@ export async function reIssueAccessToken({ refreshToken }: { refreshToken: strin
 
 	if (!session || !session.valid) return false;
 
-	const user = await findUser({ _id: session.userId });
+	const user = await showUser({ _id: session.userId });
 
 	if (!user) return false;
 
