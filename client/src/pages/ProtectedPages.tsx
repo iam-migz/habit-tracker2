@@ -8,6 +8,8 @@ function ProtectedPages() {
       return <Outlet />;
     }
     return <Navigate to="/login" />;
+  } else {
+    return null;
   }
 }
 

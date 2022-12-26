@@ -4,11 +4,11 @@ import api from '../../utils/axiosInstance';
 import { Record } from '../../types/record.types';
 
 type DeleteRecordParams = {
-  id: string;
+  recordId: string;
 };
 
 const mutationFn = async (params: DeleteRecordParams) => {
-  const res = await api.delete(`/record/${params.id}`);
+  const res = await api.delete(`/records/${params.recordId}`);
   return res.data;
 };
 

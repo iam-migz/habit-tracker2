@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 import ProtectedPages from './pages/ProtectedPages';
-// import Habit from './pages/Habit';
+import Habit from './pages/Habit';
 
 function App() {
   return (
@@ -12,16 +12,8 @@ function App() {
       <Routes>
         <Route element={<ProtectedPages />}>
           <Route element={<Home />} path="/" />
+          <Route element={<Habit />} path="/habit/:id" />
         </Route>
-
-        {/* <Route
-          path="/habit/:id"
-          element={
-            <ProtectedPage isLoggedIn={userToken != null}>
-              <Habit />
-            </ProtectedPage>
-          }
-        />  */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="*" element={<NotFound />} />

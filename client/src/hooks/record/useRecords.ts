@@ -9,5 +9,11 @@ const queryFn = async (habitId: string) => {
 };
 
 export const useRecords = (habitId: string) => {
-  return useQuery<Record[], ApiError>(['records'], () => queryFn(habitId));
+  return useQuery<Record[], ApiError>(
+    ['records', habitId],
+    () => queryFn(habitId),
+    {
+      initialData: [],
+    },
+  );
 };

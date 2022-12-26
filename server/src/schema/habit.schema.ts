@@ -6,7 +6,7 @@ const payload = {
 			.string({
 				required_error: 'Name is required',
 			})
-			.min(6, 'Name too short - 3 chars minimum'),
+			.min(3, 'Name too short - 3 chars minimum'),
 		description: z
 			.string({
 				required_error: 'description is required',

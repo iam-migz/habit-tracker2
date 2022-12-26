@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import { useEditHabit } from '../../hooks/habit/useEditHabit';
 import Modal from '../shared/Modal';
 import { useHabit } from '../../hooks/habit/useHabit';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 
 interface EditHabitModalProp {
   isOpen: boolean;
@@ -10,85 +13,76 @@ interface EditHabitModalProp {
   id: string;
 }
 
+const EditHabitSchema = z.object({
+  name: z
+    .string({
+      required_error: 'Name is required',
+    })
+    .min(3, 'Name too short - 3 chars minimum'),
+  description: z
+    .string({
+      required_error: 'description is required',
+      invalid_type_error: 'Description must be a string',
+    })
+    .min(3, 'Description too short - 3 chars minimum'),
+});
+export type EditHabitInput = z.TypeOf<typeof EditHabitSchema>;
+
 function EditHabitModal({ isOpen, setIsOpen, id }: EditHabitModalProp) {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<EditHabitInput>({
+    resolver: zodResolver(EditHabitSchema),
+  });
   const { mutate, isLoading } = useEditHabit(id);
   const { data: habit } = useHabit(id);
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [includeImages, setIncludeImages] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  useEffect(() => {
-    if (isOpen) {
-      setErrorMsg('');
-      if (habit) {
-        setName(habit.name);
-        setDescription(habit.description);
-        setIncludeImages(habit.includeImages);
-      }
-    }
-  }, [isOpen]);
-
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate(
-      { name, description, includeImages },
-      {
-        onSuccess: () => {
-          setIsOpen(false);
-        },
-        onError: (err) => {
-          if (err.response) {
-            setErrorMsg(err.response.data.message);
-          } else {
-            setErrorMsg(err.message);
-          }
-        },
+  const onSubmit = async (values: EditHabitInput) => {
+    mutate(values, {
+      onSuccess: () => {
+        setIsOpen(false);
       },
-    );
+      onError: (err) => {
+        if (err.response) {
+          setErrorMsg(err.response.data.message);
+        } else {
+          setErrorMsg(err.message);
+        }
+      },
+    });
   };
 
   return (
     <Modal {...{ isOpen, setIsOpen }} title="Edit Habit">
-      <form onSubmit={submitHandler} className="mt-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-4">
         <div className="flex flex-col mb-4">
           <label htmlFor="name">Habit Name</label>
           <input
             className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
-            onChange={(e) => setName(e.target.value)}
-            value={name}
-            type="name"
-            name="name"
+            placeholder={habit?.name}
+            type="text"
             id="name"
             required
+            {...register('name')}
           />
+          <p className="error">{errors.name?.message}</p>
         </div>
 
         <div className="flex flex-col mb-4">
           <label htmlFor="description">Habit Description</label>
           <input
             className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
-            onChange={(e) => setDescription(e.target.value)}
-            value={description}
+            placeholder={habit?.description}
             type="text"
-            name="description"
             id="description"
             required
+            {...register('description')}
           />
-        </div>
-
-        <div className="mb-4">
-          <label className="block" htmlFor="flexCheckDefault">
-            Include Images
-          </label>
-          <input
-            className="block w-4 h-4 cursor-pointer"
-            type="checkbox"
-            id="flexCheckDefault"
-            onChange={() => setIncludeImages(!includeImages)}
-            checked={includeImages}
-          />
+          <p className="error">{errors.description?.message}</p>
         </div>
 
         <div className="error">{errorMsg}</div>

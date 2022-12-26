@@ -8,21 +8,14 @@ import { useRecords } from '../../hooks/record/useRecords';
 import { useAddRecord } from '../../hooks/record/useAddRecord';
 import { useDeleteRecord } from '../../hooks/record/useDeleteRecord';
 
-interface HabitItemProps {
-  id: string;
-}
-
-function HabitItem({ id }: HabitItemProps) {
+function HabitItem({ id }: { id: string }) {
   const { data: habit } = useHabit(id);
   const { data: records } = useRecords(id);
 
   const dates = useHabitStore((state) => state.dates);
   const animationController = useAnimationControls();
 
-  // const { mutate: addDate } = useAddDate(id);
-  // const { mutate: deleteDate } = useDeleteDate(id);
-
-  const { mutate: addDate } = useAddRecord();
+  const { mutate: addDate } = useAddRecord(id);
   const { mutate: deleteData } = useDeleteRecord();
 
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
@@ -32,11 +25,12 @@ function HabitItem({ id }: HabitItemProps) {
       const index = Number(box.dataset.index);
       const date = new Date(dates[index]);
       if (box.firstChild) {
-        console.log('delete');
-        // deleteData({ date });
+        const checkBox = box.firstChild as HTMLElement;
+        const recordId = checkBox.dataset.record;
+        if (!recordId) return;
+        deleteData({ recordId });
       } else {
-        console.log('add');
-        // addDate({ date });
+        addDate({ date });
       }
     }
   }
@@ -55,6 +49,17 @@ function HabitItem({ id }: HabitItemProps) {
       document.removeEventListener('slideX', eventHandler);
     };
   }, []);
+
+  function dateCheck(date: Date) {
+    const result = records?.find(
+      (r) => new Date(r.date).getTime() === new Date(date).getTime(),
+    );
+    return result ? (
+      <CheckIcon className="h-6 w-6 text-green-500" data-record={result._id} />
+    ) : (
+      ''
+    );
+  }
 
   return (
     <Link to={`/habit/${habit?._id}`} className="block min-w-[320px] mx-auto">
@@ -85,14 +90,7 @@ function HabitItem({ id }: HabitItemProps) {
                     onClick={clickHandler}
                     data-index={index}
                   >
-                    {records?.find(
-                      (r) =>
-                        new Date(r.date).getTime() === new Date(date).getTime(),
-                    ) ? (
-                      <CheckIcon className="h-6 w-6 text-green-500" />
-                    ) : (
-                      ''
-                    )}
+                    {dateCheck(date)}
                   </div>
                 </div>
               ))}

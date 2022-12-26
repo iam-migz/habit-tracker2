@@ -8,7 +8,7 @@ type DeleteHabitParams = {
 };
 
 const mutationFn = async (params: DeleteHabitParams) => {
-  const res = await api.delete(`/habit/${params.id}`);
+  const res = await api.delete(`/habits/${params.id}`);
   return res.data;
 };
 

@@ -1,15 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Habit } from '../../types/habit.types';
 import { getDayName, getMonthName } from '../../utils/dateHelper';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import AddImageModal from './AddImageModal';
+import { useRecords } from '../../hooks/record/useRecords';
 
-interface ImageTabProp {
-  habit: Habit;
-}
-
-function ImageTab({ habit }: ImageTabProp) {
+function ImageTab({ habitId }: { habitId: string }) {
+  const { data: records } = useRecords(habitId);
   const [monthLabel, setMonthLabel] = useState('');
   const [yearLabel, setYearLabel] = useState(0);
 
@@ -18,8 +15,8 @@ function ImageTab({ habit }: ImageTabProp) {
 
   const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false);
 
-  const dates = habit.dates
-    .map((d) => new Date(d))
+  const dates = records
+    .map((r) => new Date(r.date))
     .sort((a, b) => b.getTime() - a.getTime());
 
   function mouseDownHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {

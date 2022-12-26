@@ -3,16 +3,14 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import ProgressBar from './ProgressBar';
 import { areDatesEqual } from '../../utils/dateHelper';
-import { Habit } from '../../types/habit.types';
+import { useRecords } from '../../hooks/record/useRecords';
 
-interface VisualizeTabProp {
-  habit: Habit;
-}
-
-function VisualizeTab({ habit }: VisualizeTabProp) {
+function VisualizeTab({ habitId }: { habitId: string }) {
+  const { data: records } = useRecords(habitId);
   const [currentStreak, setCurrentStreak] = useState(0);
-  const dates = habit.dates
-    .map((d) => new Date(d))
+
+  const dates = records
+    .map((r) => new Date(r.date))
     .sort((a, b) => b.getTime() - a.getTime());
 
   const getCurrentStreak = () => {

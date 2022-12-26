@@ -6,7 +6,6 @@ import api from '../../utils/axiosInstance';
 type AddHabitParams = {
   name: string;
   description: string;
-  includeImages: boolean;
 };
 
 const mutationFn = async (habit: AddHabitParams) => {

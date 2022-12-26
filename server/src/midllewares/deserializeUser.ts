@@ -10,14 +10,10 @@ const deserializeUser = async (req: Request, res: Response, next: NextFunction) 
 	const accessToken = get(req, 'cookies.accessToken') ?? get(req, 'headers.authorization', '').replace(/^Bearer\s/, '');
 	const refreshToken = get(req, 'cookies.refreshToken') ?? get(req, 'headers.x-refresh', '');
 
-	console.log({ accessToken, refreshToken });
-	// case 1: no tokens
 	if (!accessToken && !refreshToken) {
-		console.log('no tokens');
 		return next();
 	}
 
-	// case 2: access token present & (valid later)
 	if (accessToken) {
 		const { decoded, expired } = verifyJwt(accessToken, 'accessTokenSecret');
 		if (!expired) {
@@ -26,10 +22,10 @@ const deserializeUser = async (req: Request, res: Response, next: NextFunction) 
 		}
 	}
 
-	// case 3: no access token but there is refresh token
 	if (refreshToken) {
 		const { decoded, expired } = verifyJwt(refreshToken, 'refreshTokenSecret');
-		if (!expired) return next();
+		if (expired) return next();
+
 		const sessionId = get(decoded, 'sessionId');
 
 		const session = await showSession({ _id: sessionId });
