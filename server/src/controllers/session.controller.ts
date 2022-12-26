@@ -41,7 +41,7 @@ export async function createHandler(req: Request, res: Response, next: NextFunct
 
 		// set cookies
 		res.cookie('accessToken', accessToken, {
-			maxAge: 900000, // 15 mins
+			maxAge: config.get<number>('accessTokenMaxAge'),
 			httpOnly: true,
 			domain: 'localhost',
 			path: '/',
@@ -49,7 +49,7 @@ export async function createHandler(req: Request, res: Response, next: NextFunct
 			secure: false,
 		});
 		res.cookie('refreshToken', refreshToken, {
-			maxAge: 3.154e10, // 1 year
+			maxAge: config.get<number>('refreshTokenMaxAge'),
 			httpOnly: true,
 			domain: 'localhost',
 			path: '/',

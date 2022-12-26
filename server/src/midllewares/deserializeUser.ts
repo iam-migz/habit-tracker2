@@ -1,41 +1,82 @@
 import { get } from 'lodash';
 import { NextFunction, Request, Response } from 'express';
-import { verifyJwt } from '../utils/jwt.utils';
-import { reIssueAccessToken } from '../service/session.service';
+import { signJwt, verifyJwt } from '../utils/jwt.utils';
+import config from 'config';
+import { show as showSession } from '../service/session.service';
+import { show as showUser } from '../service/user.service';
 
+// refresh tokens -> moving window
 const deserializeUser = async (req: Request, res: Response, next: NextFunction) => {
 	const accessToken = get(req, 'cookies.accessToken') ?? get(req, 'headers.authorization', '').replace(/^Bearer\s/, '');
 	const refreshToken = get(req, 'cookies.refreshToken') ?? get(req, 'headers.x-refresh', '');
 
-	if (!accessToken) {
+	console.log({ accessToken, refreshToken });
+	// case 1: no tokens
+	if (!accessToken && !refreshToken) {
+		console.log('no tokens');
 		return next();
 	}
 
-	const { decoded, expired } = verifyJwt(accessToken, 'accessTokenSecret');
-	if (decoded) {
-		res.locals.user = decoded;
-		return next();
-	}
-
-	if (expired && refreshToken) {
-		const newAccessToken = await reIssueAccessToken({ refreshToken });
-
-		if (newAccessToken) {
-			res.setHeader('x-access-token', newAccessToken);
-			res.cookie('accessToken', accessToken, {
-				maxAge: 900000, // 15 mins
-				httpOnly: true,
-				domain: 'localhost',
-				path: '/',
-				sameSite: 'strict',
-				secure: false,
-			});
-
-			const result = verifyJwt(newAccessToken as string, 'accessTokenSecret');
-			res.locals.user = result.decoded;
-		} else {
-			console.log('could not generate access token');
+	// case 2: access token present & (valid later)
+	if (accessToken) {
+		const { decoded, expired } = verifyJwt(accessToken, 'accessTokenSecret');
+		if (!expired) {
+			res.locals.user = decoded;
+			return next();
 		}
+	}
+
+	// case 3: no access token but there is refresh token
+	if (refreshToken) {
+		const { decoded, expired } = verifyJwt(refreshToken, 'refreshTokenSecret');
+		if (!expired) return next();
+		const sessionId = get(decoded, 'sessionId');
+
+		const session = await showSession({ _id: sessionId });
+		if (!session || !session?.valid) return next();
+
+		const user = await showUser({ _id: session.userId });
+		if (!user) return next();
+
+		const newAccessToken = signJwt(
+			{
+				...user,
+				sessionId: session._id,
+			},
+			'accessTokenSecret',
+			{
+				expiresIn: config.get('accessTokenTtl'),
+			}
+		);
+		const newRefreshToken = signJwt(
+			{
+				...user,
+				sessionId: session._id,
+			},
+			'refreshTokenSecret',
+			{
+				expiresIn: config.get('refreshTokenTtl'),
+			}
+		);
+		// set cookies
+		res.cookie('accessToken', newAccessToken, {
+			maxAge: config.get<number>('accessTokenMaxAge'),
+			httpOnly: true,
+			domain: 'localhost',
+			path: '/',
+			sameSite: 'strict',
+			secure: false,
+		});
+		res.cookie('refreshToken', newRefreshToken, {
+			maxAge: config.get<number>('refreshTokenMaxAge'),
+			httpOnly: true,
+			domain: 'localhost',
+			path: '/',
+			sameSite: 'strict',
+			secure: false,
+		});
+		res.locals.user = decoded;
+		console.log('Issued new tokens');
 	}
 
 	return next();

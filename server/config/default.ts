@@ -3,8 +3,10 @@ export default {
 	dbUri: '',
 	origin: 'http://localhost:5173',
 	saltWorkFactor: 10,
-	accessTokenTtl: '15m',
-	refreshTokenTtl: '1y',
+	accessTokenTtl: '5m',
+	refreshTokenTtl: '15m',
 	accessTokenSecret: ``,
 	refreshTokenSecret: ``,
+	accessTokenMaxAge: 300000,
+	refreshTokenMaxAge: 900000,
 };

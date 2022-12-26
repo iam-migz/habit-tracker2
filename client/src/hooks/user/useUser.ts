@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { UseQueryOptions, useQuery } from '@tanstack/react-query';
 import { User } from '../../types/user.types';
 import { ApiError } from '../../types/util.types';
 import api from '../../utils/axiosInstance';
@@ -8,6 +8,6 @@ const queryFn = async () => {
   return res.data;
 };
 
-export const useUser = () => {
-  return useQuery<User, ApiError>(['user'], () => queryFn());
+export const useUser = (config?: UseQueryOptions<User, ApiError>) => {
+  return useQuery<User, ApiError>(['user'], () => queryFn(), { ...config });
 };
