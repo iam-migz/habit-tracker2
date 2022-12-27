@@ -1,19 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { useUserToken } from '../../stores/userToken';
 import { Habit } from '../../types/habit.types';
 import { ApiError } from '../../types/util.types';
-import { api, getJWTHeader } from '../../utils/api';
+import api from '../../utils/axiosInstance';
 
-const queryFn = async (userToken: string | null) => {
-  const res = await api.get('/habit/', {
-    headers: getJWTHeader(userToken),
-  });
+const queryFn = async () => {
+  const res = await api.get('/habits/');
   return res.data;
 };
 
 export const useHabits = () => {
-  const { userToken } = useUserToken();
-  return useQuery<Habit[], ApiError>(['habits', userToken], () =>
-    queryFn(userToken),
-  );
+  return useQuery<Habit[], ApiError>(['habits'], () => queryFn());
 };

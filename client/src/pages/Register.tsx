@@ -1,80 +1,108 @@
 import { ArrowPathIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { useRegister } from '../hooks/auth/useRegister';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import api from '../utils/axiosInstance';
+import { User } from '../types/user.types';
+import { ApiError } from '../types/util.types';
+
+const RegisterSchema = z.object({
+  name: z
+    .string({
+      required_error: 'Name is required',
+    })
+    .min(3, 'Name too short - 3 chars minimum'),
+  email: z
+    .string({
+      required_error: 'Email is required',
+    })
+    .email('Not a valid email'),
+  password: z
+    .string({
+      required_error: 'Password is required',
+    })
+    .min(6, 'Password too short - 6 chars minimum'),
+});
+
+export type RegisterInput = z.TypeOf<typeof RegisterSchema>;
 
 function Register() {
+  const {
+    register,
+    formState: { errors },
+    handleSubmit,
+  } = useForm<RegisterInput>({
+    resolver: zodResolver(RegisterSchema),
+  });
+
+  const { mutate, isLoading } = useMutation<User, ApiError, RegisterInput>(
+    async (value: RegisterInput) => {
+      const res = await api.post('/users', value);
+      return res.data;
+    },
+  );
   const navigate = useNavigate();
-  const { mutate, isLoading } = useRegister();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
-  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    mutate(
-      { name, email, password },
-      {
-        onSuccess: () => {
-          navigate('/');
-        },
-        onError: (err) => {
-          if (err.response) {
-            setErrorMsg(err.response.data.message);
-          } else {
-            setErrorMsg(err.message);
-          }
-        },
+  const onSubmit = async (values: RegisterInput) => {
+    mutate(values, {
+      onSuccess: () => {
+        navigate('/login');
       },
-    );
+      onError: (err) => {
+        setErrorMsg(err.response?.data.message as string);
+      },
+    });
   };
 
   return (
     <div className="h-screen bg-sky-200 grid place-items-center ">
       <div className="bg-white w-4/5 mx-auto p-4 mb-40 shadow-lg rounded md:w-96">
-        <form action="#" onSubmit={submitHandler}>
+        <form action="#" onSubmit={handleSubmit(onSubmit)}>
           <h1 className="text-center text-xl">Register</h1>
-
-          <div className="flex flex-col mb-4">
-            <label htmlFor="email">Email</label>
-            <input
-              className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              name="email"
-              id="email"
-              required
-            />
-          </div>
 
           <div className="flex flex-col mb-4">
             <label htmlFor="name">Name</label>
             <input
               className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
-              onChange={(e) => setName(e.target.value)}
               type="text"
-              name="name"
               id="name"
               required
+              {...register('name')}
             />
+            <p className="error">{errors.name?.message}</p>
+          </div>
+
+          <div className="flex flex-col mb-4">
+            <label htmlFor="email">Email</label>
+            <input
+              className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
+              type="email"
+              id="email"
+              required
+              {...register('email')}
+            />
+            <p className="error">{errors.email?.message}</p>
           </div>
 
           <div className="flex flex-col mb-4">
             <label htmlFor="password">Password</label>
             <input
               className="border-solid border-[1px] border-gray-400 rounded focus:outline-blue-400 p-1"
-              onChange={(e) => setPassword(e.target.value)}
               type="password"
-              name="password"
               id="password"
               required
+              {...register('password')}
             />
+            <p className="error">{errors.password?.message}</p>
           </div>
 
           <div className="error">{errorMsg}</div>
 
-          <button className="bg-green-400 btn " type="submit">
+          <button className="bg-green-400 btn" type="submit">
             Submit
           </button>
           {/* loading icon */}

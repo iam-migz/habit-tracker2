@@ -77,27 +77,26 @@ function Habit() {
                   </button>
                 )}
               </Tab>
-              {habit.includeImages && habit.dates.length != 0 && (
-                <Tab as={Fragment}>
-                  {({ selected }) => (
-                    <button
-                      className={`${
-                        selected ? 'bg-blue-500 text-white' : ''
-                      } w-full p-2 px-8 rounded`}
-                    >
-                      Image
-                    </button>
-                  )}
-                </Tab>
-              )}
+
+              <Tab as={Fragment}>
+                {({ selected }) => (
+                  <button
+                    className={`${
+                      selected ? 'bg-blue-500 text-white' : ''
+                    } w-full p-2 px-8 rounded`}
+                  >
+                    Image
+                  </button>
+                )}
+              </Tab>
             </Tab.List>
             <Tab.Panels>
               <div className="mt-4 p-4">
                 <Tab.Panel>
-                  <VisualizeTab habit={habit} />
+                  <VisualizeTab habitId={habit._id} />
                 </Tab.Panel>
                 <Tab.Panel>
-                  <ImageTab habit={habit} />
+                  <ImageTab habitId={habit._id} />
                 </Tab.Panel>
               </div>
             </Tab.Panels>

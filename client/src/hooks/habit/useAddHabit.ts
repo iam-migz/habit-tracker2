@@ -1,31 +1,26 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useUserToken } from '../../stores/userToken';
 import { Habit } from '../../types/habit.types';
 import { ApiError } from '../../types/util.types';
-import { api, getJWTHeader } from '../../utils/api';
+import api from '../../utils/axiosInstance';
 
 type AddHabitParams = {
   name: string;
   description: string;
-  includeImages: boolean;
 };
 
-const mutationFn = async (userToken: string | null, habit: AddHabitParams) => {
-  const res = await api.post('/habit/', habit, {
-    headers: getJWTHeader(userToken),
-  });
+const mutationFn = async (habit: AddHabitParams) => {
+  const res = await api.post('/habits/', habit);
   return res.data;
 };
 
 export const useAddHabit = () => {
-  const { userToken } = useUserToken();
   const queryClient = useQueryClient();
 
   return useMutation<Habit, ApiError, AddHabitParams>(
-    (habit) => mutationFn(userToken, habit),
+    (habit) => mutationFn(habit),
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['habits', userToken]);
+        queryClient.invalidateQueries(['habits']);
       },
     },
   );

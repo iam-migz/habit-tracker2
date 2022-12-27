@@ -2,22 +2,21 @@ import { useEffect } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckIcon } from '@heroicons/react/24/solid';
-import { useAddDate } from '../../hooks/habit/useAddDate';
-import { useDeleteDate } from '../../hooks/habit/useDeleteDate';
 import { useHabit } from '../../hooks/habit/useHabit';
 import { useHabitStore } from '../../stores/habitStore';
+import { useRecords } from '../../hooks/record/useRecords';
+import { useAddRecord } from '../../hooks/record/useAddRecord';
+import { useDeleteRecord } from '../../hooks/record/useDeleteRecord';
 
-interface HabitItemProps {
-  id: string;
-}
-
-function HabitItem({ id }: HabitItemProps) {
+function HabitItem({ id }: { id: string }) {
   const { data: habit } = useHabit(id);
+  const { data: records } = useRecords(id);
 
   const dates = useHabitStore((state) => state.dates);
   const animationController = useAnimationControls();
-  const { mutate: addDate } = useAddDate(id);
-  const { mutate: deleteDate } = useDeleteDate(id);
+
+  const { mutate: addDate } = useAddRecord(id);
+  const { mutate: deleteData } = useDeleteRecord(id);
 
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.preventDefault();
@@ -26,7 +25,10 @@ function HabitItem({ id }: HabitItemProps) {
       const index = Number(box.dataset.index);
       const date = new Date(dates[index]);
       if (box.firstChild) {
-        deleteDate({ date });
+        const checkBox = box.firstChild as HTMLElement;
+        const recordId = checkBox.dataset.record;
+        if (!recordId) return;
+        deleteData({ recordId });
       } else {
         addDate({ date });
       }
@@ -47,6 +49,17 @@ function HabitItem({ id }: HabitItemProps) {
       document.removeEventListener('slideX', eventHandler);
     };
   }, []);
+
+  function dateCheck(date: Date) {
+    const result = records?.find(
+      (r) => new Date(r.date).getTime() === new Date(date).getTime(),
+    );
+    return result ? (
+      <CheckIcon className="h-6 w-6 text-green-500" data-record={result._id} />
+    ) : (
+      ''
+    );
+  }
 
   return (
     <Link to={`/habit/${habit?._id}`} className="block min-w-[320px] mx-auto">
@@ -77,13 +90,7 @@ function HabitItem({ id }: HabitItemProps) {
                     onClick={clickHandler}
                     data-index={index}
                   >
-                    {habit?.dates.find(
-                      (d) => new Date(d).getTime() === new Date(date).getTime(),
-                    ) ? (
-                      <CheckIcon className="h-6 w-6 text-green-500" />
-                    ) : (
-                      ''
-                    )}
+                    {dateCheck(date)}
                   </div>
                 </div>
               ))}

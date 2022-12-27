@@ -1,17 +1,22 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useLogout } from '../../hooks/auth/useLogout';
 import {
   UserIcon,
   ChevronDownIcon,
   ArrowLeftOnRectangleIcon,
 } from '@heroicons/react/24/solid';
-import { useUserData } from '../../hooks/user/useUserData';
+
 import Dropdown, { DropdownItem } from '../shared/Dropdown';
+import { useUser } from '../../hooks/user/useUser';
+import api from '../../utils/axiosInstance';
 
 function Navbar() {
   const navigate = useNavigate();
-  const { data: user } = useUserData();
-  const { logout } = useLogout();
+  const { data: user } = useUser();
+
+  const logout = async () => {
+    await api.delete('/sessions');
+    navigate('/login');
+  };
 
   const dropdownData: DropdownItem[] = [
     {

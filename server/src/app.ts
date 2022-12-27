@@ -1,21 +1,41 @@
 import express from 'express';
-import morgan from 'morgan';
-import helmet from 'helmet';
+import dotenv from 'dotenv';
+dotenv.config();
+import config from 'config';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import connect from './utils/connect';
+import deserializeUser from './midllewares/deserializeUser';
+import errorHandler from './midllewares/errorHandler';
+import router from './routes';
+import morgan from 'morgan';
+import moment from 'moment-timezone';
 
-require('dotenv').config();
-import * as middlewares from './middlewares';
-import api from './api';
+const port = config.get<number>('port');
 
 const app = express();
-app.use(morgan('dev'));
-app.use(helmet());
-app.use(cors());
+
+app.use(
+	cors({
+		origin: config.get('origin'),
+		credentials: true,
+	})
+);
+app.use(cookieParser());
 app.use(express.json());
 
-app.use('/api', api);
+morgan.token('date', (req, res, tz) => {
+	return moment().tz('Asia/Manila').format('YYYY-MM-DD hh:mm');
+});
+morgan.format('myformat', '[:date[Asia/Manila]] :method :url :status - :response-time ms');
+app.use(morgan('myformat'));
 
-app.use(middlewares.notFound);
-app.use(middlewares.errorHandler);
+app.use(deserializeUser);
+app.use('/api', router);
 
-export default app;
+app.use(errorHandler);
+
+app.listen(port, async () => {
+	console.log(`Listening: http://localhost:${port}`);
+	await connect();
+});
