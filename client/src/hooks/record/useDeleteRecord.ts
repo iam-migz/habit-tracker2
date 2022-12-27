@@ -12,14 +12,34 @@ const mutationFn = async (params: DeleteRecordParams) => {
   return res.data;
 };
 
-export const useDeleteRecord = () => {
+export const useDeleteRecord = (habitId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<Record, ApiError, DeleteRecordParams>(
     (params) => mutationFn(params),
     {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['records']);
+      onMutate: async (newRecord) => {
+        await queryClient.cancelQueries({ queryKey: ['records', habitId] });
+
+        const previousRecords = queryClient.getQueryData<Record[]>([
+          'records',
+          habitId,
+        ]);
+
+        const advance = previousRecords?.filter(
+          (d) => d._id != newRecord.recordId,
+        );
+
+        queryClient.setQueryData(['records', habitId], advance);
+
+        return { previousRecords };
+      },
+      onError: (_err, _newRecord, context: any) => {
+        queryClient.setQueryData(['records', habitId], context.previousTodos);
+      },
+      // Always refetch after error or success:
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ['records', habitId] });
       },
     },
   );

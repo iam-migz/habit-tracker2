@@ -7,6 +7,8 @@ import { useRecords } from '../../hooks/record/useRecords';
 
 function ImageTab({ habitId }: { habitId: string }) {
   const { data: records } = useRecords(habitId);
+  if (records.length === 0)
+    return <div className="text-center">no records found </div>;
   const [monthLabel, setMonthLabel] = useState('');
   const [yearLabel, setYearLabel] = useState(0);
 

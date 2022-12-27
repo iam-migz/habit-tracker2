@@ -16,7 +16,7 @@ function HabitItem({ id }: { id: string }) {
   const animationController = useAnimationControls();
 
   const { mutate: addDate } = useAddRecord(id);
-  const { mutate: deleteData } = useDeleteRecord();
+  const { mutate: deleteData } = useDeleteRecord(id);
 
   function clickHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     e.preventDefault();

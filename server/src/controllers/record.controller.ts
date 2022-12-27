@@ -10,7 +10,7 @@ export async function createHandler(
 	try {
 		const habitId = req.query.habitId;
 
-		const duplicate = await service.show({ date: req.body.date });
+		const duplicate = await service.show({ date: req.body.date, habitId });
 		if (duplicate) {
 			res.status(409);
 			throw new Error('Record already exists');

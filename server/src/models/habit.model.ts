@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import RecordModel from './record.model';
 
 export interface HabitInput {
 	userId: mongoose.Schema.Types.ObjectId;
@@ -30,6 +31,11 @@ const HabitSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+HabitSchema.pre('deleteOne', { document: false, query: true }, async function () {
+	const doc = await this.model.findOne(this.getFilter());
+	await RecordModel.deleteMany({ habitId: doc._id });
+});
 
 const HabitModel = mongoose.model<HabitDoc>('Habit', HabitSchema);
 export default HabitModel;

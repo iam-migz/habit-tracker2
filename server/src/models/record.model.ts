@@ -22,7 +22,6 @@ const RecordSchema = new mongoose.Schema(
 		},
 		date: {
 			type: Date,
-			unique: true,
 			required: true,
 		},
 		image: {

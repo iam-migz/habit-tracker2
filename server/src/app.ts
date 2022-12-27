@@ -39,10 +39,3 @@ app.listen(port, async () => {
 	console.log(`Listening: http://localhost:${port}`);
 	await connect();
 });
-
-// TODO
-/*
-1. if habit is deleted also delete all the records
-2. record date must not be unique
-
-*/
