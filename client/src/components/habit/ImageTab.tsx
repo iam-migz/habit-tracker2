@@ -4,11 +4,14 @@ import { getDayName, getMonthName } from '../../utils/dateHelper';
 import { PhotoIcon } from '@heroicons/react/24/solid';
 import AddImageModal from './AddImageModal';
 import { useRecords } from '../../hooks/record/useRecords';
+import { useRecordStore } from '../../stores/recordStore';
 
 function ImageTab({ habitId }: { habitId: string }) {
-  const { data: records } = useRecords(habitId);
+  const { setRecordId, setFormattedDate } = useRecordStore();
+  let { data: records } = useRecords(habitId);
   if (records.length === 0)
     return <div className="text-center">no records found </div>;
+
   const [monthLabel, setMonthLabel] = useState('');
   const [yearLabel, setYearLabel] = useState(0);
 
@@ -17,9 +20,14 @@ function ImageTab({ habitId }: { habitId: string }) {
 
   const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false);
 
-  const dates = records
-    .map((r) => new Date(r.date))
-    .sort((a, b) => b.getTime() - a.getTime());
+  records = records
+    .map((r) => {
+      return {
+        ...r,
+        date: new Date(r.date),
+      };
+    })
+    .sort((a, b) => a.date.getTime() - b.date.getTime());
 
   function mouseDownHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (
@@ -27,7 +35,7 @@ function ImageTab({ habitId }: { habitId: string }) {
       e.target.hasAttribute('data-index')
     ) {
       const index = Number(e.target.dataset.index);
-      const date = new Date(dates[index]);
+      const date = records[index].date;
       setMonthLabel(getMonthName(date));
       setYearLabel(date.getFullYear());
     }
@@ -47,13 +55,13 @@ function ImageTab({ habitId }: { habitId: string }) {
 
       <div className="flex justify-between">
         <div className="">
-          {monthLabel == '' && dates.length !== 0
-            ? getMonthName(dates[0])
+          {monthLabel == '' && records.length !== 0
+            ? getMonthName(records[0].date)
             : monthLabel}
         </div>
         <div className="">
-          {yearLabel == 0 && dates.length !== 0
-            ? new Date(dates[0]).getFullYear()
+          {yearLabel == 0 && records.length !== 0
+            ? records[0].date.getFullYear()
             : yearLabel}
         </div>
       </div>
@@ -71,18 +79,23 @@ function ImageTab({ habitId }: { habitId: string }) {
             onMouseDown={mouseDownHandler}
             className="flex text-center cursor-grab space-x-2 p-1"
           >
-            {dates.map((date, index) => (
+            {records.map((record, index) => (
               <div
-                key={date.toString()}
+                key={record.date.toString()}
                 className="w-[58px] shrink-0 text-center text-xs"
                 data-index={index}
                 onClick={() => {
-                  // set store data, to this current date and index
+                  setRecordId(record._id);
+                  setFormattedDate(
+                    `${getMonthName(
+                      record.date,
+                    )} ${record.date.getDate()}, ${record.date.getFullYear()}`,
+                  );
                   setIsAddImageModalOpen(true);
                 }}
               >
-                <p data-index={index}>{getDayName(date)}</p>
-                <p data-index={index}>{date.getDate()}</p>
+                <p data-index={index}>{getDayName(record.date)}</p>
+                <p data-index={index}>{record.date.getDate()}</p>
                 <PhotoIcon className="h-7 w-7 mx-auto" />
               </div>
             ))}
@@ -91,9 +104,9 @@ function ImageTab({ habitId }: { habitId: string }) {
       </div>
 
       {/* image viewer button */}
-      <div className="btn bg-orange-300 text-center  mt-8 inline-block">
+      {/* <div className="btn bg-orange-300 text-center  mt-8 inline-block">
         Image Viewer
-      </div>
+      </div> */}
 
       <AddImageModal
         isOpen={isAddImageModalOpen}

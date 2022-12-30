@@ -1,6 +1,14 @@
 import { NextFunction, Request, Response } from 'express';
-import { createRecordInput, destroyRecordInput, indexRecordInput, showRecordInput } from '../schema/record.schema';
+import {
+	createRecordInput,
+	destroyRecordInput,
+	indexRecordInput,
+	showRecordInput,
+	uploadRecordInput,
+} from '../schema/record.schema';
 import * as service from '../service/record.service';
+import fs from 'fs';
+import { APP_ROOT } from '../app';
 
 export async function createHandler(
 	req: Request<{}, {}, createRecordInput['body'], createRecordInput['query']>,
@@ -62,6 +70,43 @@ export async function destroyHandler(
 
 		await service.destroy({ _id: record._id });
 		return res.sendStatus(204);
+	} catch (e) {
+		next(e);
+	}
+}
+
+export async function uploadImageHandler(
+	req: Request<uploadRecordInput['params'], {}, {}>,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		if (!req.file) {
+			res.status(400);
+			throw new Error('Image Missing');
+		}
+		service.update({ _id: req.params.recordId }, { image: req.file.filename });
+
+		return res.sendStatus(200);
+	} catch (e) {
+		next(e);
+	}
+}
+
+export async function deleteImageHandler(
+	req: Request<uploadRecordInput['params'], {}, {}>,
+	res: Response,
+	next: NextFunction
+) {
+	try {
+		const record = await service.show({ _id: req.params.recordId });
+		const filename = record?.image;
+		const directoryPath = APP_ROOT + '/uploads/';
+		fs.unlinkSync(directoryPath + filename);
+
+		service.update({ _id: req.params.recordId }, { image: '' });
+
+		return res.sendStatus(200);
 	} catch (e) {
 		next(e);
 	}
