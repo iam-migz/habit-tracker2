@@ -19,7 +19,6 @@ export async function validatePassword({ email, password }: { email: string; pas
 
 export async function show(query: FilterQuery<UserDoc>) {
 	const user = await UserModel.findOne(query);
-	if (!user) throw new Error('Could not find user');
-
+	if (!user) return null;
 	return omit(user.toJSON(), 'password');
 }

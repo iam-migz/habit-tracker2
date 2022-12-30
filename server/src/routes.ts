@@ -16,6 +16,7 @@ import {
 	uploadRecordSchema,
 } from './schema/record.schema';
 import uploadMiddleware from './midllewares/upload';
+import checkDirectory from './midllewares/checkDirectory';
 
 const router = Router();
 
@@ -51,7 +52,7 @@ router.delete('/records/:recordId', [requireUser, validateResource(destroyRecord
 */
 router.patch(
 	'/records/uploadImage/:recordId',
-	[validateResource(uploadRecordSchema), uploadMiddleware],
+	[requireUser, checkDirectory, validateResource(uploadRecordSchema), uploadMiddleware],
 	record.uploadImageHandler
 );
 router.patch('/records/deleteImage/:recordId', validateResource(uploadRecordSchema), record.deleteImageHandler);

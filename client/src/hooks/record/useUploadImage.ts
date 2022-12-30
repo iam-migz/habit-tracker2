@@ -8,7 +8,6 @@ type UploadImageParams = {
 };
 
 const mutationFn = async (params: UploadImageParams, recordId: string) => {
-  console.log('params.image[0] :>> ', params.image[0]);
   const res = await api.patch(
     `/records/uploadImage/${recordId}`,
     {
@@ -23,15 +22,15 @@ const mutationFn = async (params: UploadImageParams, recordId: string) => {
   return res.data;
 };
 
-export const useUploadImage = (recordId: string) => {
+export const useUploadImage = (recordId: string, habitId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation<Record, ApiError, UploadImageParams>(
     (record) => mutationFn(record, recordId),
-    // {
-    //   onSettled: () => {
-    //     queryClient.invalidateQueries({ queryKey: ['records', recordId] });
-    //   },
-    // },
+    {
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: ['records', habitId] });
+      },
+    },
   );
 };

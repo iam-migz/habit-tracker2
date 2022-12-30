@@ -104,16 +104,20 @@ function Habit() {
         </div>
       </div>
 
-      <EditHabitModal
-        isOpen={isEditModalOpen}
-        setIsOpen={setIsEditModalOpen}
-        id={habit._id}
-      />
-      <DeleteHabitModal
-        isOpen={isDeleteModalOpen}
-        setIsOpen={setIsDeleteModalOpen}
-        id={habit._id}
-      />
+      {isEditModalOpen && (
+        <EditHabitModal
+          isOpen={isEditModalOpen}
+          setIsOpen={setIsEditModalOpen}
+          id={habit._id}
+        />
+      )}
+      {isDeleteModalOpen && (
+        <DeleteHabitModal
+          isOpen={isDeleteModalOpen}
+          setIsOpen={setIsDeleteModalOpen}
+          id={habit._id}
+        />
+      )}
     </div>
   );
 }

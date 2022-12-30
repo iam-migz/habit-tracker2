@@ -10,6 +10,7 @@ import { useUploadImage } from '../../hooks/record/useUploadImage';
 interface AddImageModalProp {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  habitId: string;
 }
 const MAX_FILE_SIZE = 500000;
 const ACCEPTED_IMAGE_TYPES = [
@@ -39,9 +40,9 @@ const AddImageSchema = z.object({
 });
 type AddImageInput = z.TypeOf<typeof AddImageSchema>;
 
-function AddImageModal({ isOpen, setIsOpen }: AddImageModalProp) {
-  const { recordId, formattedDate } = useRecordStore();
-  const { mutate } = useUploadImage(recordId);
+function AddImageModal({ isOpen, setIsOpen, habitId }: AddImageModalProp) {
+  const { record, formattedDate } = useRecordStore();
+  const { mutate, isLoading } = useUploadImage(record._id, habitId);
   const {
     register,
     formState: { errors },
@@ -52,7 +53,6 @@ function AddImageModal({ isOpen, setIsOpen }: AddImageModalProp) {
   const [errorMsg, setErrorMsg] = useState('');
 
   const onSubmit = async (values: AddImageInput) => {
-    console.log({ values });
     mutate(values, {
       onSuccess: () => {
         setIsOpen(false);
@@ -83,7 +83,7 @@ function AddImageModal({ isOpen, setIsOpen }: AddImageModalProp) {
             <button className="bg-green-400 btn" type="submit">
               Submit
             </button>
-            {false && (
+            {isLoading && (
               <ArrowPathIcon className="w-5 h-5 inline-block ml-1 animate-spin" />
             )}
           </div>

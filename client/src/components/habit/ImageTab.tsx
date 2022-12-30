@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { getDayName, getMonthName } from '../../utils/dateHelper';
-import { PhotoIcon } from '@heroicons/react/24/solid';
+import { PhotoIcon, ArrowUpTrayIcon } from '@heroicons/react/24/solid';
 import AddImageModal from './AddImageModal';
 import { useRecords } from '../../hooks/record/useRecords';
 import { useRecordStore } from '../../stores/recordStore';
+import { Record } from '../../types/record.types';
+import ViewImageModal from './ViewImageModal';
 
 function ImageTab({ habitId }: { habitId: string }) {
-  const { setRecordId, setFormattedDate } = useRecordStore();
+  const { setRecord, setFormattedDate } = useRecordStore();
   let { data: records } = useRecords(habitId);
-  if (records.length === 0)
-    return <div className="text-center">no records found </div>;
 
   const [monthLabel, setMonthLabel] = useState('');
   const [yearLabel, setYearLabel] = useState(0);
@@ -19,6 +19,7 @@ function ImageTab({ habitId }: { habitId: string }) {
   const slider = useRef<HTMLDivElement>(null);
 
   const [isAddImageModalOpen, setIsAddImageModalOpen] = useState(false);
+  const [isViewImageModalOpen, setIsViewImageModalOpen] = useState(false);
 
   records = records
     .map((r) => {
@@ -28,7 +29,6 @@ function ImageTab({ habitId }: { habitId: string }) {
       };
     })
     .sort((a, b) => a.date.getTime() - b.date.getTime());
-
   function mouseDownHandler(e: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     if (
       e.target instanceof HTMLElement &&
@@ -41,6 +41,21 @@ function ImageTab({ habitId }: { habitId: string }) {
     }
   }
 
+  function clickHandler(record: Record) {
+    setFormattedDate(
+      `${getMonthName(
+        record.date,
+      )} ${record.date.getDate()}, ${record.date.getFullYear()}`,
+    );
+    setRecord(record);
+    if (record.image === undefined || record.image === '') {
+      setIsAddImageModalOpen(true);
+      return;
+    } else {
+      setIsViewImageModalOpen(true);
+    }
+  }
+
   useEffect(() => {
     // set slider right constraints
     if (slider.current) {
@@ -50,69 +65,75 @@ function ImageTab({ habitId }: { habitId: string }) {
   }, []);
 
   return (
-    <div className="max-w-[320px] mx-auto text-center">
-      {/* initial month & year */}
+    <>
+      {records.length != 0 ? (
+        <div className="max-w-[320px] mx-auto text-center">
+          <div className="flex justify-between">
+            <div className="">
+              {monthLabel == '' && records.length !== 0
+                ? getMonthName(records[0].date)
+                : monthLabel}
+            </div>
+            <div className="">
+              {yearLabel == 0 && records.length !== 0
+                ? records[0].date.getFullYear()
+                : yearLabel}
+            </div>
+          </div>
 
-      <div className="flex justify-between">
-        <div className="">
-          {monthLabel == '' && records.length !== 0
-            ? getMonthName(records[0].date)
-            : monthLabel}
-        </div>
-        <div className="">
-          {yearLabel == 0 && records.length !== 0
-            ? records[0].date.getFullYear()
-            : yearLabel}
-        </div>
-      </div>
-
-      {/* slider */}
-      <div className="flex space-x-1 justify-between items-center">
-        <div
-          className="overflow-hidden  border-black border-2 rounded"
-          ref={slider}
-        >
-          <motion.div
-            drag="x"
-            dragConstraints={{ right: 0, left: -width }}
-            whileDrag={{ cursor: 'grabbing' }}
-            onMouseDown={mouseDownHandler}
-            className="flex text-center cursor-grab space-x-2 p-1"
-          >
-            {records.map((record, index) => (
-              <div
-                key={record.date.toString()}
-                className="w-[58px] shrink-0 text-center text-xs"
-                data-index={index}
-                onClick={() => {
-                  setRecordId(record._id);
-                  setFormattedDate(
-                    `${getMonthName(
-                      record.date,
-                    )} ${record.date.getDate()}, ${record.date.getFullYear()}`,
-                  );
-                  setIsAddImageModalOpen(true);
-                }}
+          {/* slider */}
+          <div className="flex space-x-1 justify-between items-center">
+            <div
+              className="overflow-hidden  border-black border-2 rounded"
+              ref={slider}
+            >
+              <motion.div
+                drag="x"
+                dragConstraints={{ right: 0, left: -width }}
+                whileDrag={{ cursor: 'grabbing' }}
+                onMouseDown={mouseDownHandler}
+                className="flex text-center cursor-grab space-x-2 p-1"
               >
-                <p data-index={index}>{getDayName(record.date)}</p>
-                <p data-index={index}>{record.date.getDate()}</p>
-                <PhotoIcon className="h-7 w-7 mx-auto" />
-              </div>
-            ))}
-          </motion.div>
+                {records.map((record, index) => (
+                  <div
+                    key={record.date.toString()}
+                    className="w-[58px] shrink-0 text-center text-xs"
+                    data-index={index}
+                    onClick={() => clickHandler(record)}
+                  >
+                    <p data-index={index}>{getDayName(record.date)}</p>
+                    <p data-index={index}>{record.date.getDate()}</p>
+                    {record.image === undefined || record.image === '' ? (
+                      <ArrowUpTrayIcon className="h-7 w-7 mx-auto" />
+                    ) : (
+                      <PhotoIcon className="h-7 w-7 mx-auto" />
+                    )}
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+          </div>
+
+          {isAddImageModalOpen && (
+            <AddImageModal
+              isOpen={isAddImageModalOpen}
+              setIsOpen={setIsAddImageModalOpen}
+              habitId={habitId}
+            />
+          )}
+
+          {isViewImageModalOpen && (
+            <ViewImageModal
+              isOpen={isViewImageModalOpen}
+              setIsOpen={setIsViewImageModalOpen}
+              habitId={habitId}
+            />
+          )}
         </div>
-      </div>
-
-      {/* image viewer button */}
-      {/* <div className="btn bg-orange-300 text-center  mt-8 inline-block">
-        Image Viewer
-      </div> */}
-
-      <AddImageModal
-        isOpen={isAddImageModalOpen}
-        setIsOpen={setIsAddImageModalOpen}
-      />
-    </div>
+      ) : (
+        <h1>no records</h1>
+      )}
+    </>
   );
 }
 
