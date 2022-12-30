@@ -5,7 +5,6 @@ export interface RecordInput {
 	habitId: HabitDoc['_id'];
 	date: Date;
 	image?: string;
-	note?: string;
 }
 
 export interface RecordDoc extends RecordInput, mongoose.Document {
@@ -25,9 +24,6 @@ const RecordSchema = new mongoose.Schema(
 			required: true,
 		},
 		image: {
-			type: String,
-		},
-		note: {
 			type: String,
 		},
 	},

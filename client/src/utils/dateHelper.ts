@@ -1,9 +1,11 @@
 export function getDayName(date: Date): string {
-  return date.toLocaleDateString('en-PH', { weekday: 'short' });
+  const d = new Date(date);
+  return d.toLocaleDateString('en-PH', { weekday: 'short' });
 }
 
 export function getMonthName(date: Date): string {
-  return date.toLocaleDateString('en-PH', { month: 'long' });
+  const d = new Date(date);
+  return d.toLocaleDateString('en-PH', { month: 'long' });
 }
 
 // returns all the dates in a given month

@@ -1,11 +1,11 @@
-import { ArrowPathIcon } from '@heroicons/react/24/solid';
-import { useEffect, useState } from 'react';
-import { useEditHabit } from '../../hooks/habit/useEditHabit';
-import Modal from '../shared/Modal';
-import { useHabit } from '../../hooks/habit/useHabit';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { ArrowPathIcon } from '@heroicons/react/24/solid';
+import Modal from '../shared/Modal';
+import { useEditHabit } from '../../hooks/habit/useEditHabit';
+import { useHabit } from '../../hooks/habit/useHabit';
 
 interface EditHabitModalProp {
   isOpen: boolean;
@@ -47,11 +47,7 @@ function EditHabitModal({ isOpen, setIsOpen, id }: EditHabitModalProp) {
         setIsOpen(false);
       },
       onError: (err) => {
-        if (err.response) {
-          setErrorMsg(err.response.data.message);
-        } else {
-          setErrorMsg(err.message);
-        }
+        setErrorMsg(err.response?.data.message as string);
       },
     });
   };

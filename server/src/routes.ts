@@ -8,7 +8,14 @@ import requireUser from './midllewares/requireUser';
 import { createUserSchema } from './schema/user.schema';
 import { createSessionSchema } from './schema/session.schema';
 import { createHabitSchema, destroyHabitSchema, showHabitSchema, updateHabitSchema } from './schema/habit.schema';
-import { createRecordSchema, destroyRecordSchema, indexRecordSchema, showRecordSchema } from './schema/record.schema';
+import {
+	createRecordSchema,
+	destroyRecordSchema,
+	indexRecordSchema,
+	showRecordSchema,
+	uploadRecordSchema,
+} from './schema/record.schema';
+import uploadMiddleware from './midllewares/upload';
 
 const router = Router();
 
@@ -36,5 +43,17 @@ router.post('/records', [requireUser, validateResource(createRecordSchema)], rec
 router.get('/records', [requireUser, validateResource(indexRecordSchema)], record.indexHandler);
 router.get('/records/:recordId', [requireUser, validateResource(showRecordSchema)], record.showHandler);
 router.delete('/records/:recordId', [requireUser, validateResource(destroyRecordSchema)], record.destroyHandler);
+
+/*
+  1. upload image (PATCH)
+  2. delete image (PATCH)
+	3. add requireUser
+*/
+router.patch(
+	'/records/uploadImage/:recordId',
+	[validateResource(uploadRecordSchema), uploadMiddleware],
+	record.uploadImageHandler
+);
+router.patch('/records/deleteImage/:recordId', validateResource(uploadRecordSchema), record.deleteImageHandler);
 
 export default router;

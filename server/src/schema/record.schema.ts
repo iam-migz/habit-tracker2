@@ -11,16 +11,6 @@ const payload = {
 				invalid_type_error: 'Invalid Date Type',
 			})
 		),
-		image: z.optional(
-			z.string({
-				invalid_type_error: 'image must be string',
-			})
-		),
-		note: z.optional(
-			z.string({
-				invalid_type_error: 'note must be string',
-			})
-		),
 	}),
 };
 
@@ -57,7 +47,12 @@ export const destroyRecordSchema = z.object({
 	...pathParams,
 });
 
+export const uploadRecordSchema = z.object({
+	...pathParams,
+});
+
 export type createRecordInput = z.TypeOf<typeof createRecordSchema>;
 export type indexRecordInput = z.TypeOf<typeof indexRecordSchema>;
 export type showRecordInput = z.TypeOf<typeof showRecordSchema>;
 export type destroyRecordInput = z.TypeOf<typeof destroyRecordSchema>;
+export type uploadRecordInput = z.TypeOf<typeof uploadRecordSchema>;
