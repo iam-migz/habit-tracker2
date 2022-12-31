@@ -60,7 +60,7 @@ function ImageViewer() {
       <div className="md:rounded max-w-[1280px] min-w-[570px] border-2 bg-slate-50 mt-12 p-3 mx-auto">
         <h1 className="text-center mt-4">Image Viewer</h1>
         <Link to={`/habit/${id}`}>
-          <ArrowLeftIcon className="h-6 w-6 cursor-pointer" />
+          <ArrowLeftIcon className="h-6 w-6 cursor-pointer ml-2" />
         </Link>
         <div className="flex justify-center gap-8 mt-4">
           <div className="w-2/5 ">

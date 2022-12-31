@@ -6,6 +6,7 @@ import NotFound from './pages/NotFound';
 import ProtectedPages from './pages/ProtectedPages';
 import Habit from './pages/Habit';
 import ImageViewer from './pages/ImageViewer';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route element={<ProtectedPages />}>
           <Route element={<Home />} path="/" />
+          <Route element={<Profile />} path="/profile" />
           <Route element={<Habit />} path="/habit/:id" />
           <Route element={<ImageViewer />} path="/viewer/:id" />
         </Route>
