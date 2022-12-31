@@ -3,8 +3,8 @@ import * as session from './controllers/session.controller';
 import * as habit from './controllers/habit.controller';
 import * as user from './controllers/user.controller';
 import * as record from './controllers/record.controller';
-import validateResource from './midllewares/validateResource';
-import requireUser from './midllewares/requireUser';
+import validateResource from './middlewares/validateResource';
+import requireUser from './middlewares/requireUser';
 import { createUserSchema } from './schema/user.schema';
 import { createSessionSchema } from './schema/session.schema';
 import { createHabitSchema, destroyHabitSchema, showHabitSchema, updateHabitSchema } from './schema/habit.schema';
@@ -15,8 +15,8 @@ import {
 	showRecordSchema,
 	uploadRecordSchema,
 } from './schema/record.schema';
-import uploadMiddleware from './midllewares/upload';
-import checkDirectory from './midllewares/checkDirectory';
+import uploadMiddleware from './middlewares/upload';
+import checkDirectory from './middlewares/checkDirectory';
 
 const router = Router();
 
