@@ -45,16 +45,15 @@ router.get('/records', [requireUser, validateResource(indexRecordSchema)], recor
 router.get('/records/:recordId', [requireUser, validateResource(showRecordSchema)], record.showHandler);
 router.delete('/records/:recordId', [requireUser, validateResource(destroyRecordSchema)], record.destroyHandler);
 
-/*
-  1. upload image (PATCH)
-  2. delete image (PATCH)
-	3. add requireUser
-*/
 router.patch(
 	'/records/uploadImage/:recordId',
 	[requireUser, checkDirectory, validateResource(uploadRecordSchema), uploadMiddleware],
 	record.uploadImageHandler
 );
-router.patch('/records/deleteImage/:recordId', validateResource(uploadRecordSchema), record.deleteImageHandler);
+router.patch(
+	'/records/deleteImage/:recordId',
+	[requireUser, validateResource(uploadRecordSchema)],
+	record.deleteImageHandler
+);
 
 export default router;

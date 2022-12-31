@@ -29,7 +29,11 @@ function ViewImageModal({ isOpen, setIsOpen, habitId }: ViewImageModalProp) {
   return (
     <Modal {...{ isOpen, setIsOpen }} title={formattedDate}>
       <div className="mt-2">
-        <img src={`${import.meta.env.VITE_API_BASE}${record.image}`} alt="" />
+        <img
+          src={`${import.meta.env.VITE_API_BASE}${record.image}`}
+          alt=""
+          className="max-h-[400px]"
+        />
         <div className="error">{errorMsg}</div>
         <div className="flex justify-between mt-4">
           <div>

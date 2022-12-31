@@ -7,6 +7,7 @@ import { useRecords } from '../../hooks/record/useRecords';
 import { useRecordStore } from '../../stores/recordStore';
 import { Record } from '../../types/record.types';
 import ViewImageModal from './ViewImageModal';
+import { Link } from 'react-router-dom';
 
 function ImageTab({ habitId }: { habitId: string }) {
   const { setRecord, setFormattedDate } = useRecordStore();
@@ -112,6 +113,15 @@ function ImageTab({ habitId }: { habitId: string }) {
                 ))}
               </motion.div>
             </div>
+          </div>
+
+          <div className="mt-6">
+            <Link
+              to={`/viewer/${habitId}`}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Image Viewer
+            </Link>
           </div>
 
           {isAddImageModalOpen && (

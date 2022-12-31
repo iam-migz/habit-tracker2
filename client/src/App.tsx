@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import NotFound from './pages/NotFound';
 import ProtectedPages from './pages/ProtectedPages';
 import Habit from './pages/Habit';
+import ImageViewer from './pages/ImageViewer';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route element={<ProtectedPages />}>
           <Route element={<Home />} path="/" />
           <Route element={<Habit />} path="/habit/:id" />
+          <Route element={<ImageViewer />} path="/viewer/:id" />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
