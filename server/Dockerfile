@@ -4,12 +4,9 @@ WORKDIR /app
 
 COPY package.json .
 
-RUN npm install
-
 COPY . .
 
 EXPOSE 4000
 
-VOLUME [ "/app/node_modules" ]
-
-CMD ["npm", "run", "dev"]
+# https://stackoverflow.com/questions/51097652/install-node-modules-inside-docker-container-and-synchronize-them-with-host
+CMD [ -d "node_modules" ] && npm run dev || npm ci && npm run dev

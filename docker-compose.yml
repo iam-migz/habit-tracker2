@@ -1,12 +1,18 @@
 version: '3.8'
 services:
+  ui:
+    build: ./client
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./client:/app
+
   api:
     build: ./server
     ports:
       - '4000:4000'
     volumes:
       - ./server:/app
-      - /app/node_modules
     depends_on:
       - mongo
 

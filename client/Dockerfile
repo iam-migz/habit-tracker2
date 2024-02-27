@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY package.json .
 
-RUN npm install
-
 COPY . .
 
-CMD ["npm", "run", "dev"]
+EXPOSE 5173
+
+CMD [ -d "node_modules" ] && npm run dev || npm ci && npm run dev
