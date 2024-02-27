@@ -21,7 +21,7 @@ import checkDirectory from './middlewares/checkDirectory';
 const router = Router();
 
 // Healthcheck
-router.get('/', (req: Request, res: Response) => res.sendStatus(200));
+router.get('/', (req: Request, res: Response) => res.sendStatus(201));
 
 // Users
 router.post('/users', validateResource(createUserSchema), user.createHandler);
